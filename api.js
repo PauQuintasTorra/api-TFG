@@ -10,7 +10,7 @@ app.get('/api/data', (req, res) => {
 
 app.post('/api/uploadImage', (req,res)=> {
   console.log(req.params);
-  res.send(JSON.stringify("FUNCIONA SIN MIRAR"));
+  res.send(JSON.stringify("Arriba al back!"));
 })
 
 // Iniciar el servidor
