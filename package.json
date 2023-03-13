@@ -1,0 +1,17 @@
+{
+  "name": "api-tfg",
+  "version": "1.0.0",
+  "description": "This will be the back-end of the TFG",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./api.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "lodash": "^4.17.21",
+    "nodemon": "^2.0.21"
+  }
+}
