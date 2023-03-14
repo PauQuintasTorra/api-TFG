@@ -3,7 +3,10 @@ const app = express();
 const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
 const fs = require('fs');
-const sharp = require('sharp');
+const dw = require('discrete-wavelets');
+const trying = require('./Utils/ManageImage')
+const ImageLoader = require('./Utils/ImageLoader');
+const ManageFolders = require('./Utils/ManageFolders');
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get('/api/data', (req, res) => {
@@ -12,24 +15,15 @@ app.get('/api/data', (req, res) => {
   res.send(tx_json);
 });
 
-app.post('/api/uploadImage', upload.single('image'), (req,res)=> {
-  console.log(req.file);
-  const binaryData = fs.readFileSync(req.file.path);
-  console.log(binaryData);
-  sharp(binaryData)
-  .toFormat('jpeg')
-  .toBuffer()
-  .then(jpgData => {
-    // Write the JPG data to a file
-    fs.writeFileSync('image.jpg', jpgData);
-    const imagePath = './image.jpg';
-    const image = fs.readFileSync(imagePath);
-    const base64Image = Buffer.from(image).toString('base64');
-    res.send({ image: base64Image });
-  })
-  .catch(err => {
-    console.error(err);
-  });
+app.post('/api/uploadImage', upload.single('image'), async (req,res) => {
+  const empty = new ManageFolders('./uploads');
+  const imatge = new ImageLoader();
+  const enviar = await imatge.exportRAW(req.file.path);
+  const imageArray = await trying('image.jpg');
+  console.log("BBBBBBBB");
+  const trans = dw.wavedec(imageArray, 'haar');
+  res.send(trans);
+  empty.deleteAll()
 })
 
 // Iniciar el servidor
