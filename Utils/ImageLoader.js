@@ -8,23 +8,16 @@ class ImageLoader {
         this.path = path;
     }
 
-    async exportRAW(type) {
-        switch (type) {
-            case HEIC:
-                const readFileAsync = promisify(fs.readFile);
-                const writeFileAsync = promisify(fs.writeFile);
-                const inputBuffer = await readFileAsync('image.heic');
-                const outputBuffer = await heicConvert({
-                    buffer: inputBuffer,
-                    format: 'PNG'
-                  });
-                  await writeFileAsync('image.png', outputBuffer);
-                break;
-        
-            default:
-                break;
-        }
+    createImageByFormat(format){
         const binaryData = fs.readFileSync(this.path);
+        fs.writeFileSync(`image.${format}`, binaryData);
+        return binaryData;
+    }
+
+    async exportRAW(format) {
+        
+        const binaryData = fs.readFileSync(this.path);
+        //const bd = this.createImageByFormat(format);
         return sharp(binaryData)
         .toFormat('jpeg')
         .toBuffer()
@@ -43,9 +36,26 @@ class ImageLoader {
 
     extractFormat(name){
         const result = name.split('.');
-        return result[result.length - 1];
+        return result[result.length - 1].toString().toLowerCase();
     }
 
 }
 
 module.exports = ImageLoader;
+
+
+// switch (type) {
+        //     case HEIC:
+        //         const readFileAsync = promisify(fs.readFile);
+        //         const writeFileAsync = promisify(fs.writeFile);
+        //         const inputBuffer = await readFileAsync('image.heic');
+        //         const outputBuffer = await heicConvert({
+        //             buffer: inputBuffer,
+        //             format: 'PNG'
+        //           });
+        //           await writeFileAsync('image.png', outputBuffer);
+        //         break;
+        
+        //     default:
+        //         break;
+        // }

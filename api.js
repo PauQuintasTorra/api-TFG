@@ -18,18 +18,18 @@ app.get('/api/data', (req, res) => {
   res.send(tx_json);
 });
 
-app.post('/api/uploadImage', upload.single('image'), async (req,res) => {
+app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelected'}]), async (req,res) => {
   const empty = new ManageFolders('./uploads');
-  console.log(req.file)
-  const imatge = new ImageLoader(req.file.path);
-  const format = imatge.extractFormat(req.file.originalname);
-  const enviar = await imatge.exportRAW(format);
-  const imageArray = await trying('image.jpg');
-
-  //const image = fs.readFileSync('output.png');
-  //const base64Image = Buffer.from(image).toString('base64');
-  res.send(enviar);
+  // console.log(req.files['image'][0])
+  // console.log(req.body['formatSelected'])
+  const formatSelected = req.body['formatSelected'];
+  const imatge = new ImageLoader(req.files['image'][0].path);
+  //const formatImage = imatge.extractFormat(req.files['image'][0].originalname);
+  //const enviar = await imatge.exportRAW();
+  
+  //res.send(enviar);
   empty.deleteAll()
+
 })
 
 app.get('/api/downloadImageURL', (req, res) => {
