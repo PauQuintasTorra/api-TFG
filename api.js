@@ -30,6 +30,14 @@ app.post('/api/uploadImage', upload.single('image'), async (req,res) => {
   empty.deleteAll()
 })
 
+app.get('/api/downloadImageURL', (req, res) => {
+  const filePath = 'image.jpg'; // Replace with the path to your image file
+  fs.readFile(filePath, (err, data) => {
+    if (err) throw err;
+    res.send(data);
+  });
+});
+
 // Iniciar el servidor
 app.listen(3000, () => {
   console.log('Servidor iniciado en http://localhost:3000');
