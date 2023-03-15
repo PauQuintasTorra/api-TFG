@@ -1,11 +1,30 @@
 const fs = require('fs');
 const sharp = require('sharp');
+const { promisify } = require('util');
+const heicConvert = require('heic-convert');
 
 class ImageLoader {
-    constructor() {}
+    constructor(path) {
+        this.path = path;
+    }
 
-    exportRAW(path) {
-        const binaryData = fs.readFileSync(path);
+    async exportRAW(type) {
+        switch (type) {
+            case HEIC:
+                const readFileAsync = promisify(fs.readFile);
+                const writeFileAsync = promisify(fs.writeFile);
+                const inputBuffer = await readFileAsync('image.heic');
+                const outputBuffer = await heicConvert({
+                    buffer: inputBuffer,
+                    format: 'PNG'
+                  });
+                  await writeFileAsync('image.png', outputBuffer);
+                break;
+        
+            default:
+                break;
+        }
+        const binaryData = fs.readFileSync(this.path);
         return sharp(binaryData)
         .toFormat('jpeg')
         .toBuffer()
@@ -20,6 +39,11 @@ class ImageLoader {
         .catch(err => {
         console.error(err);
         });
+    }
+
+    extractFormat(name){
+        const result = name.split('.');
+        return result[result.length - 1];
     }
 
 }

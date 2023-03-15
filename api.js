@@ -20,8 +20,10 @@ app.get('/api/data', (req, res) => {
 
 app.post('/api/uploadImage', upload.single('image'), async (req,res) => {
   const empty = new ManageFolders('./uploads');
-  const imatge = new ImageLoader();
-  const enviar = await imatge.exportRAW(req.file.path);
+  console.log(req.file)
+  const imatge = new ImageLoader(req.file.path);
+  const format = imatge.extractFormat(req.file.originalname);
+  const enviar = await imatge.exportRAW(format);
   const imageArray = await trying('image.jpg');
 
   //const image = fs.readFileSync('output.png');
