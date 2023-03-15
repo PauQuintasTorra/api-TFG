@@ -4,9 +4,12 @@ const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
 const fs = require('fs');
 const dw = require('discrete-wavelets');
-const trying = require('./Utils/ManageImage')
+const trying = require('./Utils/ManageImage');
 const ImageLoader = require('./Utils/ImageLoader');
 const ManageFolders = require('./Utils/ManageFolders');
+const { forEach } = require('lodash');
+const haarWaveletTransform = require('./Utils/ManageImage');
+
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get('/api/data', (req, res) => {
@@ -20,9 +23,10 @@ app.post('/api/uploadImage', upload.single('image'), async (req,res) => {
   const imatge = new ImageLoader();
   const enviar = await imatge.exportRAW(req.file.path);
   const imageArray = await trying('image.jpg');
-  console.log("BBBBBBBB");
-  const trans = dw.wavedec(imageArray, 'haar');
-  res.send(trans);
+
+  //const image = fs.readFileSync('output.png');
+  //const base64Image = Buffer.from(image).toString('base64');
+  res.send(enviar);
   empty.deleteAll()
 })
 
