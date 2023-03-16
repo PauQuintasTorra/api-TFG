@@ -24,10 +24,10 @@ app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelect
   // console.log(req.body['formatSelected'])
   const formatSelected = req.body['formatSelected'];
   const imatge = new ImageLoader(req.files['image'][0].path);
-  //const formatImage = imatge.extractFormat(req.files['image'][0].originalname);
-  //const enviar = await imatge.exportRAW();
+  const formatImage = imatge.extractFormat(req.files['image'][0].originalname);
+  const enviar = await imatge.exportRAW();
   
-  //res.send(enviar);
+  res.send(enviar);
   empty.deleteAll()
 
 })
