@@ -20,12 +20,14 @@ app.get('/api/data', (req, res) => {
 
 app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelected'}]), async (req,res) => {
   const empty = new ManageFolders('./uploads');
-  // console.log(req.files['image'][0])
-  // console.log(req.body['formatSelected'])
+  console.log(req.files['image'][0])
+  console.log(req.body['formatSelected'])
   const formatSelected = req.body['formatSelected'];
   const imatge = new ImageLoader(req.files['image'][0].path);
   const formatImage = imatge.extractFormat(req.files['image'][0].originalname);
-  const enviar = await imatge.exportRAW();
+  console.log(formatImage);
+  console.log("abans export");
+  const enviar = await imatge.exportRAW(formatImage, formatSelected);
   
   res.send(enviar);
   empty.deleteAll()
@@ -33,7 +35,7 @@ app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelect
 })
 
 app.get('/api/downloadImageURL', (req, res) => {
-  const filePath = 'image.jpg'; // Replace with the path to your image file
+  const filePath = 'example.png'; // Replace with the path to your image file
   fs.readFile(filePath, (err, data) => {
     if (err) throw err;
     res.send(data);
