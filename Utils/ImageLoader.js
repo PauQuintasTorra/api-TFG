@@ -15,13 +15,12 @@ class ImageLoader {
     }
 
     async exportRAW(format, selected) {
-        const binaryData_ = await fs.readFileSync(this.path);
-        await fs.writeFileSync(`image.${format}`, binaryData_);
-        console.log(format);
-        console.log(selected);
-        const outputFile = 'example.png';
-        const inputFile = 'image.jpg';
-        const binaryData = await fs.readFileSync('image.jpg');
+        const binaryDataFront = await fs.readFileSync(this.path);
+        await fs.writeFileSync(`image.${format}`, binaryDataFront);
+        const outputFile = `example.${selected}`;
+        const inputFile = `image.${format}`;
+
+        const binaryData = await fs.readFileSync(inputFile);
 
         return sharp(binaryData)
         .toFormat('png')
@@ -29,8 +28,7 @@ class ImageLoader {
         .then(async jpgData => {
         // Write the JPG data to a file
             fs.writeFileSync(outputFile, jpgData);
-            const imagePath = './example.png';
-            const image = await fs.readFileSync(imagePath);
+            const image = await fs.readFileSync(`./${outputFile}`);
             const base64Image = Buffer.from(image).toString('base64');
             return ({ image: base64Image });
         })
@@ -47,20 +45,3 @@ class ImageLoader {
 }
 
 module.exports = ImageLoader;
-
-
-// switch (type) {
-        //     case HEIC:
-        //         const readFileAsync = promisify(fs.readFile);
-        //         const writeFileAsync = promisify(fs.writeFile);
-        //         const inputBuffer = await readFileAsync('image.heic');
-        //         const outputBuffer = await heicConvert({
-        //             buffer: inputBuffer,
-        //             format: 'PNG'
-        //           });
-        //           await writeFileAsync('image.png', outputBuffer);
-        //         break;
-        
-        //     default:
-        //         break;
-        // }
