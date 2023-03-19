@@ -10,6 +10,7 @@ const ManageFolders = require('./Utils/ManageFolders');
 const { forEach } = require('lodash');
 const haarWaveletTransform = require('./Utils/ManageImage');
 
+app.use(express.json());
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get('/api/data', (req, res) => {
@@ -30,8 +31,10 @@ app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelect
 
 })
 
-app.get('/api/downloadImageURL', (req, res) => {
-  const filePath = 'example.png'; // Replace with the path to your image file
+app.post('/api/downloadImageURL', (req, res) => {
+  const format = req.body['format'];
+  console.log(format);
+  const filePath = `example.${format}`; // Replace with the path to your image file
   fs.readFile(filePath, (err, data) => {
     if (err) throw err;
     res.send(data);
