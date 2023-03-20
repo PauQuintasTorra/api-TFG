@@ -19,30 +19,32 @@ app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelect
   const imatge = new ImageLoader(req.files['image'][0].path);
   const formatImage = imatge.extractFormat(req.files['image'][0].originalname);
   const enviar = await imatge.exportRAW(formatImage, formatSelected);
-  console.log(formatSelected);
-  
+
   res.send(enviar);
   empty.deleteAll()
 
 })
 
 
-app.post('/api/downloadImage...', async (req, res) => {
-  const format = req.body['format'];
+app.post('/api/downloadImageURL', async (req, res) => {
+  console.log(req);
+  const format = req.query.format;
   console.log(format);
   const filePath = `example.${format}`;
   const image = await fs.readFileSync(filePath);
-  res.send(image);
+  const contentType = `image/${format}`;
+  res.writeHead(200, {'Content-Type': contentType});
+  res.end(image, 'binary');
 
 });
 
-app.get('/api/downloadImageURL', (req, res) => {
-  const filePath = 'example.png'; // Replace with the path to your image file
-  fs.readFile(filePath, (err, data) => {
-    if (err) throw err;
-    res.send(data);
-  });
-});
+// app.get('/api/downloadImageURL', (req, res) => {
+//   const filePath = 'example.png'; // Replace with the path to your image file
+//   fs.readFile(filePath, (err, data) => {
+//     if (err) throw err;
+//     res.send(data);
+//   });
+// });
 
 // Iniciar el servidor
 app.listen(3000, () => {
