@@ -1,7 +1,5 @@
 const fs = require('fs');
 const sharp = require('sharp');
-const { promisify } = require('util');
-const heicConvert = require('heic-convert');
 
 class ImageLoader {
     constructor(path) {
@@ -23,11 +21,11 @@ class ImageLoader {
         const binaryData = await fs.readFileSync(inputFile);
 
         return sharp(binaryData)
-        .toFormat('png')
+        .toFormat(selected)
         .toBuffer()
-        .then(async jpgData => {
+        .then(async Data => {
         // Write the JPG data to a file
-            fs.writeFileSync(outputFile, jpgData);
+            fs.writeFileSync(outputFile, Data);
             const image = await fs.readFileSync(`./${outputFile}`);
             const base64Image = Buffer.from(image).toString('base64');
             return ({ image: base64Image });
