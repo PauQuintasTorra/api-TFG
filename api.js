@@ -6,6 +6,8 @@ const fs = require('fs');
 const ImageLoader = require('./Utils/ImageLoader');
 const ManageFolders = require('./Utils/ManageFolders');
 const ManageImage = require('./Utils/ManageImage');
+const {spawn} = require('child_process');
+
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get('/api/data', (req, res) => {
@@ -20,11 +22,38 @@ app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelect
   const im = new ManageImage(req.files['image'][0].path);
   const ar = await im.trying(req.files['image'][0].path);
   const pro = im.splitArray(ar);
-  console.log(pro);
+  //console.log(pro);
   const formatSelected = req.body['formatSelected'];
   const imatge = new ImageLoader(req.files['image'][0].path);
   const formatImage = imatge.extractFormat(req.files['image'][0].originalname);
   const enviar = await imatge.exportRAW(formatImage, formatSelected);
+
+  const command = 'python';
+  const scriptPath = './Utils_Python/Wavelet.py';
+  const inputArray = [1,2,3,4,5];
+
+  const child = spawn(command, [scriptPath]);
+
+  child.stdin.write(JSON.stringify(inputArray));
+  console.log(JSON.stringify(inputArray))
+  child.stdin.end();
+
+  let output = "";
+
+  child.stdout.on('data', (data) => {
+    const outputJson = data.toString();
+    const outputArray = JSON.parse(outputJson);
+    console.log(outputArray);
+    
+  });
+
+  child.stderr.on('data', (data) => {
+    console.error(data.toString());
+  });
+
+  child.on('exit', (code) => {
+    console.log(`Python process exited with code ${code}`);
+  });
 
 
 

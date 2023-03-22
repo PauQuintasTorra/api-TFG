@@ -1,17 +1,14 @@
 import sys
-import os
-import numpy
-import math
 import json
 
-input_array = json.loads(sys.argv[1])
+input_array = json.loads(sys.stdin.read())
 
-output_array = [2 * x for x in input_array]
+# Process the input array
+output_array = [x * 2 for x in input_array]
 
-# Print the output array as a JSON string
-print(json.dumps(output_array))
-
-
+# Serialize the output array as a JSON string and print it to standard output
+output_json = json.dumps(output_array)
+print(output_json)
 
 
 # class Wavelet:
