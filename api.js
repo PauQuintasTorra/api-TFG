@@ -7,6 +7,7 @@ const ImageLoader = require('./Utils/ImageLoader');
 const ManageFolders = require('./Utils/ManageFolders');
 const ManageImage = require('./Utils/ManageImage');
 const {spawn} = require('child_process');
+const dw = require('discrete-wavelets');
 
 
 // Ruta para enviar una respuesta al cliente de Angular
@@ -28,35 +29,42 @@ app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelect
   const formatImage = imatge.extractFormat(req.files['image'][0].originalname);
   const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
+  console.log(im.getWidth(), im.getHeight())
   const command = 'python';
-  const scriptPath = './Utils_Python/Wavelet.py';
-  const inputArray = [1,2,3,4,5];
+  const scriptPath = './Utils_Python/WaveletMaker.py';
+  const inputArray = pro.red;
 
-  const child = spawn(command, [scriptPath]);
+  var coeffs = dw.dwt(inputArray[0], 'haar');
+  console.log(coeffs)
+  // const filename = 'array.txt';
+  // const delimiter = ',';
+  
+  // // Create a write stream to the file
+  // const writeStream = fs.createWriteStream(filename);
+  // console.log(inputArray.length)
+  // // // Write each row of the array to the file
+  // for (let i = 0; i < inputArray.length; i++) {
+  //   writeStream.write(inputArray[i].join(delimiter) + '\n');
+  // }
+  
+  // writeStream.end();
 
-  child.stdin.write(JSON.stringify(inputArray));
-  console.log(JSON.stringify(inputArray))
-  child.stdin.end();
 
-  let output = "";
 
-  child.stdout.on('data', (data) => {
-    const outputJson = data.toString();
-    const outputArray = JSON.parse(outputJson);
-    console.log(outputArray);
+  // const child = spawn(command, [scriptPath,filename,im.getHeight(),im.getWidth()]);
+  // child.stdin.end();
+
+
+  // child.stdout.on('data', (data) => {
+  //   const outputJson = data.toString();
+  //   const outputArray = JSON.parse(outputJson);
+  //   console.log(outputArray);
     
-  });
+  // });
 
-  child.stderr.on('data', (data) => {
-    console.error(data.toString());
-  });
-
-  child.on('exit', (code) => {
-    console.log(`Python process exited with code ${code}`);
-  });
-
-
-
+  // child.stderr.on('data', (data) => {
+  //   console.error(data.toString());
+  // });
 
   res.send(enviar);
   empty.deleteAll()

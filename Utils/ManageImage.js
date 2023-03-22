@@ -48,15 +48,23 @@ class ManageImage{
     for (let i = 0; i < this.height; i++) {
       this.image.red[i] = new Array(this.width);
     }
-    console.log(this.image.red)
+    //console.log(this.image.red)
 
     for(let y = 0; y < this.image.red.length; y++){
       for(let x = 0; x < this.image.red[y].length; x++){
         this.image.red[y][x] = array[y][x].red;
       } 
     }
-    console.log(this.image)
+    //console.log(this.image)
     return this.image;
+  }
+  
+  getHeight(){
+    return this.height;
+  }
+  
+  getWidth(){
+    return this.width;
   }
 }
 
