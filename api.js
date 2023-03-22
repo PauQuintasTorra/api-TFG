@@ -5,6 +5,7 @@ const upload = multer({dest: 'uploads/'});
 const fs = require('fs');
 const ImageLoader = require('./Utils/ImageLoader');
 const ManageFolders = require('./Utils/ManageFolders');
+const ManageImage = require('./Utils/ManageImage');
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get('/api/data', (req, res) => {
@@ -15,10 +16,18 @@ app.get('/api/data', (req, res) => {
 
 app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelected'}]), async (req,res) => {
   const empty = new ManageFolders('./uploads');
+  console.log("AR")
+  const im = new ManageImage(req.files['image'][0].path);
+  const ar = await im.trying(req.files['image'][0].path);
+  const pro = im.splitArray(ar);
+  console.log(pro);
   const formatSelected = req.body['formatSelected'];
   const imatge = new ImageLoader(req.files['image'][0].path);
   const formatImage = imatge.extractFormat(req.files['image'][0].originalname);
   const enviar = await imatge.exportRAW(formatImage, formatSelected);
+
+
+
 
   res.send(enviar);
   empty.deleteAll()
