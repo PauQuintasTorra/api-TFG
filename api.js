@@ -6,8 +6,11 @@ const fs = require('fs');
 const ImageLoader = require('./Utils/ImageLoader');
 const ManageFolders = require('./Utils/ManageFolders');
 const ManageImage = require('./Utils/ManageImage');
+const Wavelet = require('./Utils/Wavelet');
+const zeros = require('./Utils/zeros')
 const {spawn} = require('child_process');
 const dw = require('discrete-wavelets');
+const Jimp = require('jimp');
 
 
 // Ruta para enviar una respuesta al cliente de Angular
@@ -33,9 +36,27 @@ app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelect
   const command = 'python';
   const scriptPath = './Utils_Python/WaveletMaker.py';
   const inputArray = pro.red;
+  console.log(inputArray.length)
 
-  var coeffs = dw.dwt(inputArray[0], 'haar');
-  console.log(coeffs)
+  const wavelet = new Wavelet(im.getWidth(),im.getHeight());
+  
+  const empty_matrix = new Array(im.getHeight());
+  for (let i = 0; i < im.getHeight(); i++) {
+    empty_matrix[i] = new Array(im.getWidth());
+  }
+  const trans_level_zero = wavelet.RHaar_transform(inputArray);
+  console.log("aaaarray")
+  console.log(inputArray)
+  const trans_abs = wavelet.trans_abs(trans_level_zero, empty_matrix);
+  console.log("OOOOOTRO")
+
+  
+ 
+  // var coeffs = dw.dwt(inputArray[0], 'haar');
+  // const r = coeffs.reduce((acc, cur) => acc.concat(cur), []);
+  // console.log(r)
+
+
   // const filename = 'array.txt';
   // const delimiter = ',';
   
