@@ -11,6 +11,7 @@ const zeros = require('./Utils/zeros')
 const {spawn} = require('child_process');
 const dw = require('discrete-wavelets');
 const Jimp = require('jimp');
+const PNG = require('pngjs').PNG;
 
 
 // Ruta para enviar una respuesta al cliente de Angular
@@ -36,26 +37,65 @@ app.post('/api/uploadImage', upload.fields([{name: 'image'},{name: 'formatSelect
   const command = 'python';
   const scriptPath = './Utils_Python/WaveletMaker.py';
   const inputArray = pro.red;
-  console.log(inputArray.length)
+  console.log(inputArray)
 
   const wavelet = new Wavelet(im.getWidth(),im.getHeight());
   
-  const empty_matrix = new Array(im.getHeight());
+  const empty_matrix = new Array(im.getHeight()).fill(0);
   for (let i = 0; i < im.getHeight(); i++) {
-    empty_matrix[i] = new Array(im.getWidth());
+    empty_matrix[i] = new Array(im.getWidth()).fill(0);
   }
-  const trans_level_zero = wavelet.RHaar_transform(inputArray);
-  console.log("aaaarray")
-  console.log(inputArray)
-  const trans_abs = wavelet.trans_abs(trans_level_zero, empty_matrix);
-  console.log("OOOOOTRO")
 
+  // const trans_level_zero = wavelet.RHaar_transform(inputArray);
+  // console.log("aaaarray")
+  // console.log(inputArray)
+  // const trans_abs = wavelet.trans_abs(trans_level_zero, empty_matrix);
+  // console.log("OOOOOTRO")
+  var count = 0;
+  for (let i = 0; i < pro.red.length; i++) {
+    for(let j = 0; j < pro.red[i].length; j++){
+      if(pro.red[i][j] > 256){
+        count +=1;
+        console.log(pro.red[i][j]);
+      }
+    }
+  } 
+
+  console.log("FINAL", count);
+
+  for(let i = 0; i < pro.red.length; i++){
+    var coeffs = dw.dwt(pro.red[i], 'haar');
+    const r = coeffs.reduce((acc, cur) => acc.concat(cur), []);
+    empty_matrix[i] = r;
+  }
   
- 
-  // var coeffs = dw.dwt(inputArray[0], 'haar');
-  // const r = coeffs.reduce((acc, cur) => acc.concat(cur), []);
-  // console.log(r)
 
+  const maxVal = Math.max(...empty_matrix.flat());
+  const minVal = Math.min(...empty_matrix.flat());
+  const normalizedMatrix = empty_matrix.map(row => row.map(val => Math.round((val - minVal) / (maxVal - minVal) * 65535)));
+
+  const png = new PNG({
+    width: normalizedMatrix[0].length,
+    height: normalizedMatrix.length,
+    bitDepth: 16,
+    colorType: 0, // grayscale
+  });
+
+  // Convert the 2D array to a flat buffer of 16-bit values
+  const data = Buffer.alloc(png.width * png.height * 2);
+  for (let i = 0; i < png.height; i++) {
+    for (let j = 0; j < png.width; j++) {
+      const val = normalizedMatrix[i][j];
+      data.writeUInt16BE(val, (i * png.width + j) * 2);
+    }
+  }
+
+  png.data = data;
+
+  png.pack().pipe(fs.createWriteStream('wavelet.png'));
+
+  //console.log(empty_matrix);
+  
 
   // const filename = 'array.txt';
   // const delimiter = ',';

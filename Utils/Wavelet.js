@@ -15,7 +15,6 @@ class Wavelet {
             vector_t[counter] = vector[v_id] + Math.floor(vector_t[Math.floor(size / 2) + counter] / 2);
             counter += 1;
         }
-        console.log(vector_t)
         return vector_t;
     }
 
