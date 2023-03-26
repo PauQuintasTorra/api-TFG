@@ -13,6 +13,7 @@ class Wavelet {
     for (let v_id = 0; v_id < size; v_id += 2) {
       vector_t[Math.floor(size / 2) + counter] =
         vector[v_id + 1] - vector[v_id];
+
       vector_t[counter] =
         vector[v_id] + Math.floor(vector_t[Math.floor(size / 2) + counter] / 2);
       counter += 1;

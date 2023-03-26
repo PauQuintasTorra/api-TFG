@@ -12,6 +12,7 @@ const { spawn } = require("child_process");
 const dw = require("discrete-wavelets");
 const Jimp = require("jimp");
 const PNG = require("pngjs").PNG;
+const sharp = require("sharp");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -27,10 +28,10 @@ app.post(
     const empty = new ManageFolders("./uploads");
     console.log("AR");
     const im = new ManageImage(req.files["image"][0].path);
-    const ar = await im.trying(req.files["image"][0].path);
-    console.log(ar);
-    const pro = im.splitArray(ar);
-    //console.log(pro);
+    const inputArrayRed = await im.trying(req.files["image"][0].path);
+    console.log(inputArrayRed);
+    // const pro = im.splitArray(ar);
+    // console.log(pro);
     const formatSelected = req.body["formatSelected"];
     const imatge = new ImageLoader(req.files["image"][0].path);
     const formatImage = imatge.extractFormat(
@@ -39,92 +40,50 @@ app.post(
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
     console.log(im.getWidth(), im.getHeight());
-    const command = "python";
-    const scriptPath = "./Utils_Python/WaveletMaker.py";
-    const inputArray = pro.red;
-    // console.log(inputArray);
-    const he = im.getHeight();
-    const wi = im.getWidth();
-    const wavelet = new Wavelet(pro.red.length, pro.red[0].length);
 
-    const empty_matrix = new Array(im.getHeight()).fill(0);
-    for (let i = 0; i < im.getHeight(); i++) {
-      empty_matrix[i] = new Array(im.getWidth()).fill(0);
+    const wavelet = new Wavelet(inputArrayRed.length, inputArrayRed[0].length);
+
+    const provaRed = wavelet.RHaar_transform(inputArrayRed);
+
+    const empty_matrix = new Array(provaRed.length).fill(0);
+    for (let i = 0; i < provaRed.length; i++) {
+      empty_matrix[i] = new Array(provaRed[0].length).fill(0);
     }
+    // const provaGreen = wavelet.RHaar_transform(inputArrayGreen);
+    // const provaBlue = wavelet.RHaar_transform(inputArrayBlue);
 
-    console.log("abans");
-    console.log(inputArray != undefined);
-    const prova = wavelet.RHaar_transform(inputArray);
-    console.log("després");
-    console.log("PROVA MATRIX");
-    console.log(prova);
-    console.log("Final");
+    const trans_absRed = wavelet.trans_abs(provaRed, empty_matrix);
 
-    // const trans_level_zero = wavelet.RHaar_transform(inputArray);
-    // console.log("aaaarray")
-    // console.log(inputArray)
-    const trans_abs = wavelet.trans_abs(prova, empty_matrix);
-    // console.log("OOOOOTRO")
-    var count = 0;
-    for (let i = 0; i < prova.length; i++) {
-      for (let j = 0; j < prova[i].length; j++) {
-        if (prova[i][j] > 256 || prova[i][j] < -256) {
-          count += 1;
-          console.log(prova[i][j]);
-        }
-      }
-    }
+    // const trans_absGreen = wavelet.trans_abs(provaGreen, empty_matrix);
+    // const trans_absBlue = wavelet.trans_abs(provaBlue, empty_matrix);
 
-    console.log("FINAL", count);
+    // var count = 0;
+    // for (let i = 0; i < prova.length; i++) {
+    //   for (let j = 0; j < prova[i].length; j++) {
+    //     if (prova[i][j] > 256 || prova[i][j] < -256) {
+    //       count += 1;
+    //       console.log(prova[i][j]);
+    //     }
+    //   }
+    // }
+
+    // console.log("FINAL", count);
 
     // Create a new Jimp image with the same dimensions as the input array
-    const image = new Jimp(trans_abs[0].length, trans_abs.length);
+    const image = new Jimp(trans_absRed.length, trans_absRed[0].length);
 
-    // Iterate over the input array and set the red channel of each pixel in the image
-    trans_abs.forEach((row, y) => {
-      row.forEach((value, x) => {
-        const pixelColor = Jimp.rgbaToInt(value, 0, 0, 255); // create a Jimp color from the red channel value
-        image.setPixelColor(pixelColor, x, y); // set the color of the pixel in the image
+    // Iterate over the input arrays and set the color of each pixel in the image
+    trans_absRed.forEach((row, y) => {
+      row.forEach((red, x) => {
+        //   const green = trans_absGreen[y][x];
+        //   const blue = trans_absBlue[y][x];
+        const pixelColor = Jimp.rgbaToInt(red, 0, 0, 255);
+        image.setPixelColor(pixelColor, x, y);
       });
     });
 
-    // Save the image as a grayscale JPEG file
-    image.grayscale().write("output.jpg");
-
-    // for (let i = 0; i < pro.red.length; i++) {
-    //   var coeffs = dw.dwt(pro.red[i], "haar");
-    //   const r = coeffs.reduce((acc, cur) => acc.concat(cur), []);
-    //   empty_matrix[i] = r;
-    // }
-
-    // console.log(empty_matrix);
-
-    // const filename = 'array.txt';
-    // const delimiter = ',';
-
-    // // Create a write stream to the file
-    // const writeStream = fs.createWriteStream(filename);
-    // console.log(inputArray.length)
-    // // // Write each row of the array to the file
-    // for (let i = 0; i < inputArray.length; i++) {
-    //   writeStream.write(inputArray[i].join(delimiter) + '\n');
-    // }
-
-    // writeStream.end();
-
-    // const child = spawn(command, [scriptPath,filename,im.getHeight(),im.getWidth()]);
-    // child.stdin.end();
-
-    // child.stdout.on('data', (data) => {
-    //   const outputJson = data.toString();
-    //   const outputArray = JSON.parse(outputJson);
-    //   console.log(outputArray);
-
-    // });
-
-    // child.stderr.on('data', (data) => {
-    //   console.error(data.toString());
-    // });
+    // Save the image as a JPEG file
+    image.write("output.jpg");
 
     res.send(enviar);
     empty.deleteAll();

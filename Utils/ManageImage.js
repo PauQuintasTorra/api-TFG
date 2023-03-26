@@ -21,23 +21,33 @@ class ManageImage {
 
         this.width = width;
         this.height = height;
-        // Create a 2D array with the same dimensions as the image
-        const pixelArray = new Array(height);
-        for (let i = 0; i < height; i++) {
-          pixelArray[i] = new Array(width);
+
+        // Create 2D arrays to store the pixel data for each color channel
+        const redChannel = new Array(height);
+        const greenChannel = new Array(height);
+        const blueChannel = new Array(height);
+
+        for (let y = 0; y < height; y++) {
+          // Initialize the arrays for this row
+          redChannel[y] = new Array(width);
+          greenChannel[y] = new Array(width);
+          blueChannel[y] = new Array(width);
+
+          for (let x = 0; x < width; x++) {
+            // Get the pixel color at this position
+            const { r, g, b } = Jimp.intToRGBA(image.getPixelColor(x, y));
+            // Store the color values in the corresponding arrays
+            redChannel[y][x] = r;
+            greenChannel[y][x] = g;
+            blueChannel[y][x] = b;
+          }
         }
-        // Iterate over each pixel in the image and add it to the array
-        image.scan(0, 0, width, height, (x, y, idx) => {
-          const red = image.bitmap.data[idx + 0];
-          const green = image.bitmap.data[idx + 1];
-          const blue = image.bitmap.data[idx + 2];
-          const alpha = image.bitmap.data[idx + 3];
-          // Add the pixel to the array
-          pixelArray[y][x] = { red, green, blue, alpha };
-        });
-        // Do something with the 2D array of pixels
-        //console.log(pixelArray);
-        resolve(pixelArray);
+
+        // Do something with the color channel data
+        // console.log("Red channel:", redChannel);
+        // console.log('Green channel:', greenChannel);
+        // console.log('Blue channel:', blueChannel);
+        resolve(redChannel);
       });
     });
   }
