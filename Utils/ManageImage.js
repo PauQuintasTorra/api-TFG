@@ -47,7 +47,7 @@ class ManageImage {
         // console.log("Red channel:", redChannel);
         // console.log('Green channel:', greenChannel);
         // console.log('Blue channel:', blueChannel);
-        resolve(redChannel);
+        resolve({ red: redChannel, green: greenChannel, blue: blueChannel });
       });
     });
   }

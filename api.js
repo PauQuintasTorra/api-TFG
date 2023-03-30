@@ -26,12 +26,12 @@ app.post(
   upload.fields([{ name: "image" }, { name: "formatSelected" }]),
   async (req, res) => {
     const empty = new ManageFolders("./uploads");
-    console.log("AR");
     const im = new ManageImage(req.files["image"][0].path);
-    const inputArrayRed = await im.trying(req.files["image"][0].path);
-    console.log(inputArrayRed);
-    // const pro = im.splitArray(ar);
-    // console.log(pro);
+    const tryd = await im.trying(req.files["image"][0].path);
+    const inputArrayRed = tryd.red;
+    const inputArrayGreen = tryd.green;
+    const inputArrayBlue = tryd.blue;
+
     const formatSelected = req.body["formatSelected"];
     const imatge = new ImageLoader(req.files["image"][0].path);
     const formatImage = imatge.extractFormat(
@@ -39,51 +39,49 @@ app.post(
     );
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
-    console.log(im.getWidth(), im.getHeight());
+    const wavelet = new Wavelet(inputArrayRed[0].length, inputArrayRed.length);
 
-    const wavelet = new Wavelet(inputArrayRed.length, inputArrayRed[0].length);
+    const empty_matrix = new Array(inputArrayRed.length).fill(0);
+    for (let i = 0; i < inputArrayRed.length; i++) {
+      empty_matrix[i] = new Array(inputArrayRed[0].length).fill(0);
+    }
 
     const provaRed = wavelet.RHaar_transform(inputArrayRed);
 
-    const empty_matrix = new Array(provaRed.length).fill(0);
+    const empty_matrix_ = new Array(provaRed.length).fill(0);
     for (let i = 0; i < provaRed.length; i++) {
-      empty_matrix[i] = new Array(provaRed[0].length).fill(0);
+      empty_matrix_[i] = new Array(provaRed[0].length).fill(0);
     }
-    // const provaGreen = wavelet.RHaar_transform(inputArrayGreen);
-    // const provaBlue = wavelet.RHaar_transform(inputArrayBlue);
+    const empty_matrix__ = new Array(provaRed.length).fill(0);
+    for (let i = 0; i < provaRed.length; i++) {
+      empty_matrix__[i] = new Array(provaRed[0].length).fill(0);
+    }
+    const empty_matrix___ = new Array(provaRed.length).fill(0);
+    for (let i = 0; i < provaRed.length; i++) {
+      empty_matrix___[i] = new Array(provaRed[0].length).fill(0);
+    }
+    const provaGreen = wavelet.RHaar_transform(inputArrayGreen);
+    const provaBlue = wavelet.RHaar_transform(inputArrayBlue);
 
-    const trans_absRed = wavelet.trans_abs(provaRed, empty_matrix);
-
-    // const trans_absGreen = wavelet.trans_abs(provaGreen, empty_matrix);
-    // const trans_absBlue = wavelet.trans_abs(provaBlue, empty_matrix);
-
-    // var count = 0;
-    // for (let i = 0; i < prova.length; i++) {
-    //   for (let j = 0; j < prova[i].length; j++) {
-    //     if (prova[i][j] > 256 || prova[i][j] < -256) {
-    //       count += 1;
-    //       console.log(prova[i][j]);
-    //     }
-    //   }
-    // }
-
-    // console.log("FINAL", count);
+    const trans_absRed = wavelet.trans_abs(provaRed, empty_matrix_);
+    const trans_absGreen = wavelet.trans_abs(provaGreen, empty_matrix__);
+    const trans_absBlue = wavelet.trans_abs(provaBlue, empty_matrix___);
 
     // Create a new Jimp image with the same dimensions as the input array
-    const image = new Jimp(trans_absRed.length, trans_absRed[0].length);
+    const image = new Jimp(trans_absRed[0].length, trans_absRed.length);
 
     // Iterate over the input arrays and set the color of each pixel in the image
     trans_absRed.forEach((row, y) => {
       row.forEach((red, x) => {
-        //   const green = trans_absGreen[y][x];
-        //   const blue = trans_absBlue[y][x];
-        const pixelColor = Jimp.rgbaToInt(red, 0, 0, 255);
+        const green = trans_absGreen[y][x];
+        const blue = trans_absBlue[y][x];
+        const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
         image.setPixelColor(pixelColor, x, y);
       });
     });
 
     // Save the image as a JPEG file
-    image.write("output.jpg");
+    image.write("output.png");
 
     res.send(enviar);
     empty.deleteAll();

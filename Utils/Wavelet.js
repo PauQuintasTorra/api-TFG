@@ -7,7 +7,7 @@ class Wavelet {
   }
 
   RHaar_forward(vector) {
-    const size = parseInt(this.SubbandSizeX);
+    const size = parseInt(vector.length);
     const vector_t = Array(size).fill(0);
     let counter = 0;
     for (let v_id = 0; v_id < size; v_id += 2) {
@@ -36,14 +36,12 @@ class Wavelet {
   }
 
   RHaar_transform(matrix) {
-    for (let i = 0; i < this.SubbandSizeX; i++) {
+    for (let i = 0; i < this.SubbandSizeY; i++) {
       const aux = this.RHaar_forward(matrix[i]);
-      for (let a = 0; a < aux.length; a++) {
-        matrix[i][a] = aux[a];
-      }
+      matrix[i] = aux;
     }
 
-    // for (let j = 0; j < this.SubbandSizeY; j++) {
+    // for (let j = 0; j < this.SubbandSizeX; j++) {
     //   const aux_j = this.RHaar_forward(math.column(matrix, j));
     //   for (let b = 0; b < aux_j.length; b++) {
     //     matrix[b][j] = aux_j[b];
@@ -104,9 +102,9 @@ class Wavelet {
   }
 
   trans_abs(matrix, abs_matrix) {
-    for (let z = 0; z < matrix.length; z++) {
-      for (let y = 0; y < matrix[z].length; y++) {
-        abs_matrix[z][y] = parseInt(Math.abs(matrix[z][y]));
+    for (let x = 0; x < this.SubbandSizeX; x++) {
+      for (let y = 0; y < this.SubbandSizeY; y++) {
+        abs_matrix[y][x] = parseInt(Math.abs(matrix[y][x]));
       }
     }
     return abs_matrix;
