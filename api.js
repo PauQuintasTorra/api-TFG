@@ -7,12 +7,6 @@ const ImageLoader = require("./Utils/ImageLoader");
 const ManageFolders = require("./Utils/ManageFolders");
 const ManageImage = require("./Utils/ManageImage");
 const Wavelet = require("./Utils/Wavelet");
-const zeros = require("./Utils/zeros");
-const { spawn } = require("child_process");
-const dw = require("discrete-wavelets");
-const Jimp = require("jimp");
-const PNG = require("pngjs").PNG;
-const sharp = require("sharp");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -28,9 +22,9 @@ app.post(
     const empty = new ManageFolders("./uploads");
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.trying();
-    const inputArrayRed = inputArray.red;
-    const inputArrayGreen = inputArray.green;
-    const inputArrayBlue = inputArray.blue;
+    const height = im.getHeight();
+    const width = im.getWidth();
+    const wavelet = new Wavelet(width, height);
 
     const formatSelected = req.body["formatSelected"];
     const imatge = new ImageLoader(req.files["image"][0].path);
@@ -39,31 +33,7 @@ app.post(
     );
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
-    const wavelet = new Wavelet(inputArrayRed[0].length, inputArrayRed.length);
-
-    const provaRed = wavelet.RHaar_transform(inputArrayRed);
-    const provaGreen = wavelet.RHaar_transform(inputArrayGreen);
-    const provaBlue = wavelet.RHaar_transform(inputArrayBlue);
-
-    const trans_absRed = wavelet.trans_abs(provaRed);
-    const trans_absGreen = wavelet.trans_abs(provaGreen);
-    const trans_absBlue = wavelet.trans_abs(provaBlue);
-
-    // Create a new Jimp image with the same dimensions as the input array
-    const image = new Jimp(trans_absRed[0].length, trans_absRed.length);
-
-    // Iterate over the input arrays and set the color of each pixel in the image
-    trans_absRed.forEach((row, y) => {
-      row.forEach((red, x) => {
-        const green = trans_absGreen[y][x];
-        const blue = trans_absBlue[y][x];
-        const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-        image.setPixelColor(pixelColor, x, y);
-      });
-    });
-
-    // Save the image as a JPEG file
-    image.write("output.png");
+    wavelet.main(inputArray, formatSelected);
 
     res.send(enviar);
     empty.deleteAll();

@@ -1,9 +1,40 @@
 const math = require("mathjs");
+const Jimp = require("jimp");
 
 class Wavelet {
   constructor(x, y) {
     this.SubbandSizeX = x;
     this.SubbandSizeY = y;
+  }
+
+  main(inputArray, formatSelected) {
+    const inputArrayRed = inputArray.red;
+    const inputArrayGreen = inputArray.green;
+    const inputArrayBlue = inputArray.blue;
+
+    const trans_Red = this.RHaar_transform(inputArrayRed);
+    const trans_Green = this.RHaar_transform(inputArrayGreen);
+    const trans_Blue = this.RHaar_transform(inputArrayBlue);
+
+    const trans_absRed = this.trans_abs(trans_Red);
+    const trans_absGreen = this.trans_abs(trans_Green);
+    const trans_absBlue = this.trans_abs(trans_Blue);
+
+    // Create a new Jimp image with the same dimensions as the input array
+    const image = new Jimp(trans_absRed[0].length, trans_absRed.length);
+
+    // Iterate over the input arrays and set the color of each pixel in the image
+    trans_absRed.forEach((row, y) => {
+      row.forEach((red, x) => {
+        const green = trans_absGreen[y][x];
+        const blue = trans_absBlue[y][x];
+        const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
+        image.setPixelColor(pixelColor, x, y);
+      });
+    });
+
+    // Save the image as a JPEG file
+    image.write(`wavelet.${formatSelected}`);
   }
 
   RHaar_forward(vector) {
