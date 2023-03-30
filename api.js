@@ -27,10 +27,10 @@ app.post(
   async (req, res) => {
     const empty = new ManageFolders("./uploads");
     const im = new ManageImage(req.files["image"][0].path);
-    const tryd = await im.trying(req.files["image"][0].path);
-    const inputArrayRed = tryd.red;
-    const inputArrayGreen = tryd.green;
-    const inputArrayBlue = tryd.blue;
+    const inputArray = await im.trying();
+    const inputArrayRed = inputArray.red;
+    const inputArrayGreen = inputArray.green;
+    const inputArrayBlue = inputArray.blue;
 
     const formatSelected = req.body["formatSelected"];
     const imatge = new ImageLoader(req.files["image"][0].path);
@@ -41,31 +41,13 @@ app.post(
 
     const wavelet = new Wavelet(inputArrayRed[0].length, inputArrayRed.length);
 
-    const empty_matrix = new Array(inputArrayRed.length).fill(0);
-    for (let i = 0; i < inputArrayRed.length; i++) {
-      empty_matrix[i] = new Array(inputArrayRed[0].length).fill(0);
-    }
-
     const provaRed = wavelet.RHaar_transform(inputArrayRed);
-
-    const empty_matrix_ = new Array(provaRed.length).fill(0);
-    for (let i = 0; i < provaRed.length; i++) {
-      empty_matrix_[i] = new Array(provaRed[0].length).fill(0);
-    }
-    const empty_matrix__ = new Array(provaRed.length).fill(0);
-    for (let i = 0; i < provaRed.length; i++) {
-      empty_matrix__[i] = new Array(provaRed[0].length).fill(0);
-    }
-    const empty_matrix___ = new Array(provaRed.length).fill(0);
-    for (let i = 0; i < provaRed.length; i++) {
-      empty_matrix___[i] = new Array(provaRed[0].length).fill(0);
-    }
     const provaGreen = wavelet.RHaar_transform(inputArrayGreen);
     const provaBlue = wavelet.RHaar_transform(inputArrayBlue);
 
-    const trans_absRed = wavelet.trans_abs(provaRed, empty_matrix_);
-    const trans_absGreen = wavelet.trans_abs(provaGreen, empty_matrix__);
-    const trans_absBlue = wavelet.trans_abs(provaBlue, empty_matrix___);
+    const trans_absRed = wavelet.trans_abs(provaRed);
+    const trans_absGreen = wavelet.trans_abs(provaGreen);
+    const trans_absBlue = wavelet.trans_abs(provaBlue);
 
     // Create a new Jimp image with the same dimensions as the input array
     const image = new Jimp(trans_absRed[0].length, trans_absRed.length);

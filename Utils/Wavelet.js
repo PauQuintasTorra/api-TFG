@@ -41,12 +41,12 @@ class Wavelet {
       matrix[i] = aux;
     }
 
-    // for (let j = 0; j < this.SubbandSizeX; j++) {
-    //   const aux_j = this.RHaar_forward(math.column(matrix, j));
-    //   for (let b = 0; b < aux_j.length; b++) {
-    //     matrix[b][j] = aux_j[b];
-    //   }
-    // }
+    for (let j = 0; j < this.SubbandSizeX; j++) {
+      const aux_j = this.RHaar_forward(this.extractColumn(matrix, j));
+      for (let b = 0; b < aux_j.length; b++) {
+        matrix[b][j] = aux_j[b];
+      }
+    }
 
     return matrix;
   }
@@ -101,13 +101,17 @@ class Wavelet {
     return m_;
   }
 
-  trans_abs(matrix, abs_matrix) {
+  trans_abs(matrix) {
     for (let x = 0; x < this.SubbandSizeX; x++) {
       for (let y = 0; y < this.SubbandSizeY; y++) {
-        abs_matrix[y][x] = parseInt(Math.abs(matrix[y][x]));
+        matrix[y][x] = parseInt(Math.abs(matrix[y][x]));
       }
     }
-    return abs_matrix;
+    return matrix;
+  }
+
+  extractColumn(arr, column) {
+    return arr.map((x) => x[column]);
   }
 }
 

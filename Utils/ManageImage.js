@@ -5,7 +5,6 @@ const { reject } = require("lodash");
 class ManageImage {
   constructor(path) {
     this.path = path;
-    this.image = {};
     this.height = 0;
     this.width = 0;
   }
@@ -43,40 +42,9 @@ class ManageImage {
           }
         }
 
-        // Do something with the color channel data
-        // console.log("Red channel:", redChannel);
-        // console.log('Green channel:', greenChannel);
-        // console.log('Blue channel:', blueChannel);
         resolve({ red: redChannel, green: greenChannel, blue: blueChannel });
       });
     });
-  }
-
-  splitArray(array) {
-    console.log(this.height, this.width, this.image);
-    this.image.red = new Array(this.height);
-    for (let i = 0; i < this.height; i++) {
-      this.image.red[i] = new Array(this.width);
-    }
-    this.image.blue = new Array(this.height);
-    for (let i = 0; i < this.height; i++) {
-      this.image.blue[i] = new Array(this.width);
-    }
-    this.image.green = new Array(this.height);
-    for (let i = 0; i < this.height; i++) {
-      this.image.green[i] = new Array(this.width);
-    }
-    //console.log(this.image.red)
-
-    for (let y = 0; y < this.image.red.length; y++) {
-      for (let x = 0; x < this.image.red[y].length; x++) {
-        this.image.red[y][x] = array[y][x].red;
-        this.image.blue[y][x] = array[y][x].blue;
-        this.image.green[y][x] = array[y][x].green;
-      }
-    }
-    //console.log(this.image)
-    return this.image;
   }
 
   getHeight() {
