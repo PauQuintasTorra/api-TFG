@@ -33,7 +33,7 @@ app.post(
     );
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
-    wavelet.main(inputArray, formatSelected);
+    wavelet.main(inputArray, formatSelected, 0);
 
     res.send(enviar);
     empty.deleteAll();
