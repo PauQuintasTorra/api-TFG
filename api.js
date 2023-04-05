@@ -33,6 +33,34 @@ app.post(
     const formatImage = imatge.extractFormat(
       req.files["image"][0].originalname
     );
+
+    const enviar = await imatge.exportRAW(formatImage, formatSelected);
+
+    wavelet.main(inputArray, formatSelected, 2);
+
+    res.send(enviar);
+    empty.deleteAll();
+  }
+);
+
+app.post(
+  "/api/seeImage",
+  upload.fields([{ name: "image" }, { name: "operation" }]),
+  async (req, res) => {
+    const empty = new ManageFolders("./uploads");
+    const im = new ManageImage(req.files["image"][0].path);
+    const inputArray = await im.trying();
+    const height = im.getHeight();
+    const width = im.getWidth();
+    const wavelet = new Wavelet(width, height);
+
+    const formatSelected = req.body["formatSelected"];
+
+    console.log(req.files["image"][0].path)
+    const imatge = new ImageLoader(req.files["image"][0].path);
+    const formatImage = imatge.extractFormat(
+      req.files["image"][0].originalname
+    );
     
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
