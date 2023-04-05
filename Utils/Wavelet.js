@@ -30,13 +30,17 @@ class Wavelet {
         image.setPixelColor(pixelColor, x, y);
       });
     });
-    console.log(image);
     // Save the image as a JPEG file
     image.write(`wavelet_${this.level}.${formatSelected}`);
   }
 
-  RHaar_forward(vector) {
-    const size = parseInt(vector.length);
+  RHaar_forward(vector, r_c) {
+    let size = 0;
+    if (r_c == 'r') {
+      size = parseInt(this.SubbandSizeX);
+    } else {
+      size = parseInt(this.SubbandSizeY);
+    }
     const vector_t = Array(size).fill(0);
     let counter = 0;
     for (let v_id = 0; v_id < size; v_id += 2) {
@@ -66,12 +70,14 @@ class Wavelet {
 
   RHaar_transform(matrix) {
     for (let i = 0; i < this.SubbandSizeY; i++) {
-      const aux = this.RHaar_forward(matrix[i]);
-      matrix[i] = aux;
+      const aux = this.RHaar_forward(matrix[i], 'r');
+      for(let a = 0; a < aux.length; a++){
+        matrix[i][a] = aux[a];
+      }
     }
 
     for (let j = 0; j < this.SubbandSizeX; j++) {
-      const aux_j = this.RHaar_forward(this.extractColumn(matrix, j));
+      const aux_j = this.RHaar_forward(this.extractColumn(matrix, j), 'c');
       for (let b = 0; b < aux_j.length; b++) {
         matrix[b][j] = aux_j[b];
       }
@@ -154,6 +160,13 @@ class Wavelet {
     for (let x = 0; x < matrix[0].length; x++) {
       for (let y = 0; y < matrix.length; y++) {
         matrix[y][x] = parseInt(Math.abs(matrix[y][x]));
+        if(matrix[y][x] > 255) {
+          matrix[y][x] = 255;
+        } else {
+          if (matrix[y][x] < -255) {
+            matrix[y][x] = -255
+          }
+        }
       }
     }
     return matrix;
@@ -161,6 +174,23 @@ class Wavelet {
 
   extractColumn(arr, column) {
     return arr.map((x) => x[column]);
+  }
+
+  getMaxMin(array) {
+    let max = -Infinity;
+    let min = Infinity;
+  
+    for (let i = 0; i < array.length; i++) {
+      for (let j = 0; j < array[i].length; j++) {
+        if (array[i][j] > max) {
+          max = array[i][j];
+        }
+        if (array[i][j] < min) {
+          min = array[i][j];
+        }
+      }
+    }
+    return { max, min };
   }
 }
 

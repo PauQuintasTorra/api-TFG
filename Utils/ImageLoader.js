@@ -12,7 +12,7 @@ class ImageLoader {
     const outputFile = `example.${selected}`;
     const inputFile = `image.${format}`;
 
-    const binaryData = await fs.readFileSync(inputFile);
+    const binaryData = await fs.readFileSync('wavelet_2.jpg');
 
     return sharp(binaryData)
       .toFormat(selected)

@@ -27,13 +27,16 @@ app.post(
     const wavelet = new Wavelet(width, height);
 
     const formatSelected = req.body["formatSelected"];
+
+    console.log(req.files["image"][0].path)
     const imatge = new ImageLoader(req.files["image"][0].path);
     const formatImage = imatge.extractFormat(
       req.files["image"][0].originalname
     );
+    
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
-    wavelet.main(inputArray, formatSelected, 0);
+    wavelet.main(inputArray, formatSelected, 2);
 
     res.send(enviar);
     empty.deleteAll();
