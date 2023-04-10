@@ -7,6 +7,7 @@ const ImageLoader = require("./Utils/ImageLoader");
 const ManageFolders = require("./Utils/ManageFolders");
 const ManageImage = require("./Utils/ManageImage");
 const Wavelet = require("./Utils/Wavelet");
+const Statistics = require("./Utils/Statistics");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -25,6 +26,8 @@ app.post(
     const height = im.getHeight();
     const width = im.getWidth();
     const wavelet = new Wavelet(width, height);
+    const entropyRed = new Statistics(inputArray.blue);
+    console.log("Entropia red", entropyRed.getEntropyOrderZero());
 
     const formatSelected = req.body["formatSelected"];
 
@@ -36,8 +39,9 @@ app.post(
 
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
-    wavelet.main(inputArray, formatSelected, 2);
-
+    const rrr = wavelet.main(inputArray, formatSelected, 2);
+    const entropyRed_ = new Statistics(rrr);
+    console.log("Entropia wave", entropyRed_.getEntropyOrderZero());
     res.send(enviar);
     empty.deleteAll();
   }
