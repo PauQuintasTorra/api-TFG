@@ -49,29 +49,29 @@ app.post(
 
 app.post(
   "/api/seeImage",
-  upload.fields([{ name: "image" }, { name: "operation" }]),
+  upload.fields([{ name: "image" },  {name: "originalFormat"}, { name: "boxes" },]),
   async (req, res) => {
-    const empty = new ManageFolders("./uploads");
-    const im = new ManageImage(req.files["image"][0].path);
-    const inputArray = await im.trying();
-    const height = im.getHeight();
-    const width = im.getWidth();
-    const wavelet = new Wavelet(width, height);
+    const boxes = JSON.parse(req.body.boxes);
+    console.log(boxes)
 
-    const formatSelected = req.body["formatSelected"];
-
-    console.log(req.files["image"][0].path)
-    const imatge = new ImageLoader(req.files["image"][0].path);
-    const formatImage = imatge.extractFormat(
-      req.files["image"][0].originalname
-    );
-    
-    const enviar = await imatge.exportRAW(formatImage, formatSelected);
-
-    wavelet.main(inputArray, formatSelected, 2);
-
-    res.send(enviar);
-    empty.deleteAll();
+    for (let i = 0; i < boxes.length; i++){
+      const className = boxes[i].nameClass;
+      
+      switch (className) {
+        case 'wavelet':
+          console.log("hola");
+          break;
+        case 'quantizer':
+          console.log("bona tarda");
+          break;
+        case 'arithmeticOperation':
+          console.log("bon dia");
+      
+        default:
+          break;
+      }
+      
+    }
   }
 );
 
