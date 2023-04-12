@@ -32,7 +32,7 @@ class Wavelet {
     });
     // Save the image as a JPEG file
     image.write(`wavelet_${this.level}.${formatSelected}`);
-    return trans_inputArray.blue;
+    return trans_inputArray;
   }
 
   RHaar_forward(vector, r_c) {

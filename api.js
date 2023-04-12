@@ -8,6 +8,7 @@ const ManageFolders = require("./Utils/ManageFolders");
 const ManageImage = require("./Utils/ManageImage");
 const Wavelet = require("./Utils/Wavelet");
 const Statistics = require("./Utils/Statistics");
+const LetsCreate = require("./Utils/LetsCreate");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -40,7 +41,7 @@ app.post(
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
     const rrr = wavelet.main(inputArray, formatSelected, 2);
-    const entropyRed_ = new Statistics(rrr);
+    const entropyRed_ = new Statistics(rrr.red);
     console.log("Entropia wave", entropyRed_.getEntropyOrderZero());
     res.send(enviar);
     empty.deleteAll();
@@ -52,26 +53,12 @@ app.post(
   upload.fields([{ name: "image" },  {name: "originalFormat"}, { name: "boxes" },]),
   async (req, res) => {
     const boxes = JSON.parse(req.body.boxes);
-    console.log(boxes)
+    const im = new ManageImage(req.files["image"][0].path);
+    const inputArray = await im.trying();
 
-    for (let i = 0; i < boxes.length; i++){
-      const className = boxes[i].nameClass;
-      
-      switch (className) {
-        case 'wavelet':
-          console.log("hola");
-          break;
-        case 'quantizer':
-          console.log("bona tarda");
-          break;
-        case 'arithmeticOperation':
-          console.log("bon dia");
-      
-        default:
-          break;
-      }
-      
-    }
+    const mainCreate = new LetsCreate(inputArray, boxes);
+    mainCreate.mainCreate();
+
   }
 );
 
