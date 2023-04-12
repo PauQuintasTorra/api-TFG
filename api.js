@@ -53,6 +53,7 @@ app.post(
   upload.fields([{ name: "image" },  {name: "originalFormat"}, { name: "boxes" },]),
   async (req, res) => {
     const boxes = JSON.parse(req.body.boxes);
+    console.log(boxes)
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.trying();
 

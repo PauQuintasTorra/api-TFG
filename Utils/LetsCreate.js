@@ -9,7 +9,7 @@ class LetsCreate{
     mainCreate(){
 
         for (let i = 0; i < this.boxes.length; i++){
-            const className = this.boxes[i].nameClass;
+            const className = this.boxes[i].class.type;
             
             switch (className) {
               case 'wavelet':
@@ -26,8 +26,6 @@ class LetsCreate{
             }
             
         }
-    
-        console.log(this.image)
     
     }
 
