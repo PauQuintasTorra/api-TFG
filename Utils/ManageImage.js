@@ -9,7 +9,7 @@ class ManageImage {
     this.width = 0;
   }
 
-  trying() {
+  pathToArrayRGB() {
     return new Promise((resolve, reject) => {
       Jimp.read(this.path, (err, image) => {
         if (err) throw err;

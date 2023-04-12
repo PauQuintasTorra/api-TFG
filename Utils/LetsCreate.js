@@ -12,13 +12,13 @@ class LetsCreate{
             const className = this.boxes[i].class.type;
             
             switch (className) {
-              case 'wavelet':
+              case 'Wavelet':
                 console.log("hola");
                 break;
-              case 'quantizer':
+              case 'Quantizer':
                 console.log("bona tarda");
                 break;
-              case 'arithmeticOperation':
+              case 'ArithmeticOperation':
                 console.log("bon dia");
             
               default:
@@ -27,6 +27,8 @@ class LetsCreate{
             
         }
     
+
+        return this.image;
     }
 
 

@@ -23,7 +23,7 @@ app.post(
   async (req, res) => {
     const empty = new ManageFolders("./uploads");
     const im = new ManageImage(req.files["image"][0].path);
-    const inputArray = await im.trying();
+    const inputArray = await im.pathToArrayRGB();
     const height = im.getHeight();
     const width = im.getWidth();
     const wavelet = new Wavelet(width, height);
@@ -55,7 +55,7 @@ app.post(
     const boxes = JSON.parse(req.body.boxes);
     console.log(boxes)
     const im = new ManageImage(req.files["image"][0].path);
-    const inputArray = await im.trying();
+    const inputArray = await im.pathToArrayRGB();
 
     const mainCreate = new LetsCreate(inputArray, boxes);
     mainCreate.mainCreate();
