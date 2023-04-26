@@ -1,75 +1,63 @@
 const math = require("mathjs");
+const Jimp = require("jimp");
 
 class Quantizer{
-    constructor(matrix, q_step){
-        this.matrix = matrix;
+    constructor(q_step){
+        this.inputArray = {};
         this.q_step = q_step;
     }
 
-   
-    quantize(){
-       
+    main(inputArray, formatSelected) {
+        this.inputArray = inputArray;
+
+        const quan_red = this.quantize(inputArray.red);
+        const quan_green = this.quantize(inputArray.green);
+        const quan_blue = this.quantize(inputArray.blue);
+        
+        // Create a new Jimp image with the same dimensions as the input array
+        const image = new Jimp(quan_red[0].length, quan_blue.length);
+    
+        // Iterate over the input arrays and set the color of each pixel in the image
+        quan_red.forEach((row, y) => {
+          row.forEach((red, x) => {
+            const green = quan_green[y][x];
+            const blue = quan_blue[y][x];
+            const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
+            image.setPixelColor(pixelColor, x, y);
+          });
+        });
+        // Save the image as a JPEG file
+        image.write(`quantizer_${this.q_step}.${formatSelected}`);
+        return {red: quan_red, green: quan_green, blue: quan_blue};
     }
 
-    getEntropyOrderZero(){
-        let valors = {};
-        let entropy = 0;
-        for(let y = 0; y < this.matrix.length; y++){
-            for (let x = 0; x < this.matrix[0].length; x++){
-                if (this.matrix[y][x] in valors){
-                    valors[this.matrix[y][x]] += 1;
-                } else {
-                    valors[this.matrix[y][x]] = 1;
+    quantize(matrix){
+        for(let y = 0; y < matrix.length; y++){
+            for(let x = 0; x < matrix[0].length; x++){
+                const abs_number = matrix[y][x];
+                const number = Math.floor(abs_number / this.q_step);
+                if (matrix[y][x] != 0){
+                    matrix[y][x] = number * parseInt( Math.floor(abs_number / matrix[y][x]));
+                } else{
+                    matrix[y][x] = 0;
                 }
             }
         }
-        for (const p in valors) {
-            const prob = valors[p] / this.counter;
-            entropy += prob * Math.log2(1 / prob);
+        return matrix;
+    }
+
+    dequantize(matrix){
+        for(y = 0; y < matrix.length; y++){
+            for(X = 0; x < matrix[0].length; x++){
+                matrix[y][x] = parseInt(matrix[y][x] * this.q_step);
+            }
         }
-        return entropy;
+        return matrix;
     }
 
 }
 
 module.exports = Quantizer;
-
-// class Quantizer:
-    
-    
-//     def __init__(self,q_technique, q_step):
-//         self.quantizer_technique = q_technique
-//         self.quantization_step = q_step
-        
-//     def quantize(self, original_image, image_data_quantized):
-        
-//         for z in range(original_image.shape[0]):
-//             for y in range(original_image.shape[1]):
-//                 for x in range(original_image.shape[2]):
-//                     abs_number = abs(original_image[z][y][x])
-//                     number = math.floor(abs_number/self.quantization_step)
-//                     if original_image[z][y][x] != 0:
-//                         image_data_quantized[z][y][x] = number * int(math.floor(abs_number/original_image[z][y][x]))
-//                     else:
-//                         image_data_quantized[z][y][x] = 0
-//     def dequantize(self, image_data_quantized, image_data_reconstructed):
-//         q_step = self.quantization_step
-//         for z in range(image_data_quantized.shape[0]):
-//             for y in range(image_data_quantized.shape[1]):
-//                 for x in range(image_data_quantized.shape[2]):
-//                     image_data_reconstructed[z][y][x] = int((q_step * image_data_quantized[z][y][x]))
-                    
-
-//     def quantize_value(self, value):
-//         if value == 0:
-//             return 0
-//         else:
-//             abs_number = abs(value)
-//             number = math.floor(abs_number/self.quantization_step)
-//             return number * (abs_number/value)
-
-//     def dequantize_value(self, value):
-//         return self.quantization_step * value
     
                        
 

@@ -9,6 +9,7 @@ const ManageImage = require("./Utils/ManageImage");
 const Wavelet = require("./Utils/Wavelet");
 const Statistics = require("./Utils/Statistics");
 const LetsCreate = require("./Utils/LetsCreate");
+const Quantizer = require("./Utils/Quantizer");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -24,6 +25,7 @@ app.post(
     const empty = new ManageFolders("./uploads");
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
+    const aa = {red: inputArray.red.slice(), green: inputArray.green.slice(), blue: inputArray.blue.slice()};
     const height = im.getHeight();
     const width = im.getWidth();
     const wavelet = new Wavelet(width, height);
@@ -43,6 +45,10 @@ app.post(
     const rrr = wavelet.main(inputArray, formatSelected, 2);
     const entropyRed_ = new Statistics(rrr.red);
     console.log("Entropia wave", entropyRed_.getEntropyOrderZero());
+
+    console.log("arriba aqui");
+    const quantizer = new Quantizer(10);
+    const a = quantizer.main(aa, formatSelected);
     res.send(enviar);
     empty.deleteAll();
   }
