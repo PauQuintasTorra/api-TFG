@@ -25,7 +25,7 @@ app.post(
     const empty = new ManageFolders("./uploads");
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
-    const aa = await im.pathToArrayRGB();
+    const aa = JSON.parse(JSON.stringify(inputArray));
     const height = im.getHeight();
     const width = im.getWidth();
 

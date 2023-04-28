@@ -13,6 +13,8 @@ class Wavelet {
     this.inputArray = inputArray;
     const trans_inputArray = this.RHaar_transByLevelRGB(inputArray);
 
+    const returner = JSON.parse(JSON.stringify(trans_inputArray));
+
     const trans_absRed = this.trans_abs(trans_inputArray.red);
     const trans_absGreen = this.trans_abs(trans_inputArray.green);
     const trans_absBlue = this.trans_abs(trans_inputArray.blue);
@@ -31,7 +33,7 @@ class Wavelet {
     });
     // Save the image as a JPEG file
     image.write(`wavelet_Haar_${this.level}.${formatSelected}`);
-    return trans_inputArray;
+    return returner;
   }
 
   mainDestransform(inputArray, formatSelected) {
@@ -200,6 +202,7 @@ class Wavelet {
     var m_blue = this.RHaar_destransform(inputArray.blue);
     if (this.level !== 0) {
       for (let l = 0; l < this.level; l++) {
+        console.log(this.SubbandSizeX)
         this.SubbandSizeX = parseInt(this.SubbandSizeX * 2);
         this.SubbandSizeY = parseInt(this.SubbandSizeY * 2);
         m_red = this.RHaar_destransform(m_red);
