@@ -5,12 +5,10 @@ class Wavelet {
   constructor(x, y, level) {
     this.SubbandSizeX = x;
     this.SubbandSizeY = y;
-    this.inputArray = {};
     this.level = level;
   }
  
   mainTransform(inputArray, formatSelected) {
-    this.inputArray = inputArray;
     const trans_inputArray = this.RHaar_transByLevelRGB(inputArray);
 
     const returner = JSON.parse(JSON.stringify(trans_inputArray));
@@ -37,8 +35,6 @@ class Wavelet {
   }
 
   mainDestransform(inputArray, formatSelected) {
-    this.inputArray = inputArray;
-        
     this.SubbandSizeX = parseInt(inputArray.red[0].length / (2 ** this.level));
     this.SubbandSizeY = parseInt(inputArray.red.length / (2 ** this.level));
 
@@ -171,7 +167,6 @@ class Wavelet {
         m_blue = this.RHaar_transform(m_blue);
       }
     }
-    this.inputArray = { red: m_red, green: m_green, blue: m_blue };
     return { red: m_red, green: m_green, blue: m_blue };
   }
 
@@ -210,7 +205,6 @@ class Wavelet {
         m_blue = this.RHaar_destransform(m_blue);
       }
     }
-    this.inputArray = { red: m_red, green: m_green, blue: m_blue };
     return { red: m_red, green: m_green, blue: m_blue };
   }
 

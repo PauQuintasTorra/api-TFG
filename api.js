@@ -45,16 +45,17 @@ app.post(
     const ddd = wavelet.mainDestransform(rrr, formatSelected);
     
     // STATISTICS
-    const entropyRed_wavelet = new Statistics(rrr.red);
-    const entropyRed_original = new Statistics(aa.red);
-    console.log("Entropia red", entropyRed_original.getEntropyOrderZero());
-    console.log("Entropia wave", entropyRed_wavelet.getEntropyOrderZero());
+    const statistics_original = new Statistics();
+    console.log("Mínim de la imatge", statistics_original.getMin(aa));
+    // const entropyRed_original = new Statistics(aa.red);
+    // console.log("Entropia red", entropyRed_original.getEntropyOrderZero());
+    // console.log("Entropia wave", entropyRed_wavelet.getEntropyOrderZero());
 
     // QUANTITZADOR
     const quantizer = new Quantizer(10);
     const a = quantizer.mainQuantize(aa, formatSelected);
     const b = quantizer.mainDequantize(a, formatSelected);
-
+    
     res.send(enviar);
     empty.deleteAll(); 
   }
