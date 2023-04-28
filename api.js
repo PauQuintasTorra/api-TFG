@@ -37,12 +37,12 @@ app.post(
       req.files["image"][0].originalname
     );
 
-    const enviar = await imatge.exportRAW(formatImage, formatSelected);
+    const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
 
     // WAVELET
     const wavelet = new Wavelet(width, height, 2);
-    const rrr = wavelet.mainTransform(inputArray, formatSelected);
-    const ddd = wavelet.mainDestransform(rrr, formatSelected);
+    const rrr = wavelet.mainTransform(inputArray, formatImage);
+    const ddd = wavelet.mainDestransform(rrr, formatImage);
     
     // STATISTICS
     const statistics_original = new Statistics();
@@ -56,11 +56,13 @@ app.post(
     // console.log("Entropia wave", entropyRed_wavelet.getEntropyOrderZero());
 
     // QUANTITZADOR
-    const quantizer = new Quantizer(10);
-    const a = quantizer.mainQuantize(aa, formatSelected);
-    const b = quantizer.mainDequantize(a, formatSelected);
+    const quantizer = new Quantizer(100);
+    const a = quantizer.mainQuantize(aa, formatImage);
+    const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
+    const b = quantizer.mainDequantize(a, formatImage);
     console.log("Mitja de la imatge", statistics_original.getEntropyOrderZeroRGB(b));
     
+    // const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
     res.send(enviar);
     empty.deleteAll(); 
   }
