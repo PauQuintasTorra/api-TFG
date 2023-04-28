@@ -25,12 +25,9 @@ app.post(
     const empty = new ManageFolders("./uploads");
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
-    const aa = {red: inputArray.red.slice(), green: inputArray.green.slice(), blue: inputArray.blue.slice()};
+    const aa = await im.pathToArrayRGB();
     const height = im.getHeight();
     const width = im.getWidth();
-    const wavelet = new Wavelet(width, height);
-    const entropyRed = new Statistics(inputArray.blue);
-    console.log("Entropia red", entropyRed.getEntropyOrderZero());
 
     const formatSelected = req.body["formatSelected"];
 
@@ -42,15 +39,24 @@ app.post(
 
     const enviar = await imatge.exportRAW(formatImage, formatSelected);
 
-    const rrr = wavelet.main(inputArray, formatSelected, 2);
-    const entropyRed_ = new Statistics(rrr.red);
-    console.log("Entropia wave", entropyRed_.getEntropyOrderZero());
+    // WAVELET
+    const wavelet = new Wavelet(width, height, 2);
+    const rrr = wavelet.mainTransform(inputArray, formatSelected);
+    const ddd = wavelet.mainDestransform(rrr, formatSelected);
+    
+    // STATISTICS
+    const entropyRed_wavelet = new Statistics(rrr.red);
+    const entropyRed_original = new Statistics(aa.red);
+    console.log("Entropia red", entropyRed_original.getEntropyOrderZero());
+    console.log("Entropia wave", entropyRed_wavelet.getEntropyOrderZero());
 
-    console.log("arriba aqui");
+    // QUANTITZADOR
     const quantizer = new Quantizer(10);
-    const a = quantizer.main(aa, formatSelected);
+    const a = quantizer.mainQuantize(aa, formatSelected);
+    const b = quantizer.mainDequantize(a, formatSelected);
+
     res.send(enviar);
-    empty.deleteAll();
+    empty.deleteAll(); 
   }
 );
 

@@ -2,16 +2,15 @@ const math = require("mathjs");
 const Jimp = require("jimp");
 
 class Wavelet {
-  constructor(x, y) {
+  constructor(x, y, level) {
     this.SubbandSizeX = x;
     this.SubbandSizeY = y;
     this.inputArray = {};
-    this.level = 0;
-  }
-
-  main(inputArray, formatSelected, level) {
-    this.inputArray = inputArray;
     this.level = level;
+  }
+ 
+  mainTransform(inputArray, formatSelected) {
+    this.inputArray = inputArray;
     const trans_inputArray = this.RHaar_transByLevelRGB(inputArray);
 
     const trans_absRed = this.trans_abs(trans_inputArray.red);
@@ -31,8 +30,37 @@ class Wavelet {
       });
     });
     // Save the image as a JPEG file
-    image.write(`wavelet_${this.level}.${formatSelected}`);
+    image.write(`wavelet_Haar_${this.level}.${formatSelected}`);
     return trans_inputArray;
+  }
+
+  mainDestransform(inputArray, formatSelected) {
+    this.inputArray = inputArray;
+        
+    this.SubbandSizeX = parseInt(inputArray.red[0].length / (2 ** this.level));
+    this.SubbandSizeY = parseInt(inputArray.red.length / (2 ** this.level));
+
+    const destrans_inputArray = this.RHaar_destransByLevelRGB(inputArray);
+
+    const destrans_absRed = this.trans_abs(destrans_inputArray.red);
+    const destrans_absGreen = this.trans_abs(destrans_inputArray.green);
+    const destrans_absBlue = this.trans_abs(destrans_inputArray.blue);
+
+    // Create a new Jimp image with the same dimensions as the input array
+    const image = new Jimp(destrans_inputArray.red[0].length, destrans_inputArray.red.length);
+
+    // Iterate over the input arrays and set the color of each pixel in the image
+    destrans_absRed.forEach((row, y) => {
+      row.forEach((red, x) => {
+        const green = destrans_absGreen[y][x];
+        const blue = destrans_absBlue[y][x];
+        const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
+        image.setPixelColor(pixelColor, x, y);
+      });
+    });
+    // Save the image as a JPEG file
+    image.write(`reverse_wavelet_Haar_${this.level}.${formatSelected}`);
+    return destrans_inputArray;
   }
 
   RHaar_forward(vector, r_c) {
@@ -55,8 +83,13 @@ class Wavelet {
     return vector_t;
   }
 
-  RHaar_inverse(vector_t) {
-    const size = parseInt(this.SubbandSizeX);
+  RHaar_inverse(vector_t, r_c) {
+    let size = 0;
+    if (r_c == 'r') {
+      size = parseInt(this.SubbandSizeX);
+    } else {
+      size = parseInt(this.SubbandSizeY);
+    }
     const vector_rec = Array(size).fill(0);
     const s_ = parseInt(size / 2);
     let counter = 0;
@@ -89,14 +122,14 @@ class Wavelet {
 
   RHaar_destransform(matrix) {
     for (let j = 0; j < this.SubbandSizeX; j++) {
-      const aux_j = this.RHaar_inverse(math.column(matrix, j));
+      const aux_j = this.RHaar_inverse(this.extractColumn(matrix, j), 'c');
       for (let b = 0; b < aux_j.length; b++) {
         matrix[b][j] = aux_j[b];
       }
     }
 
     for (let i = 0; i < this.SubbandSizeY; i++) {
-      const aux = this.RHaar_inverse(matrix[i]);
+      const aux = this.RHaar_inverse(matrix[i], 'r');
       for (let a = 0; a < aux.length; a++) {
         matrix[i][a] = aux[a];
       }
@@ -105,13 +138,13 @@ class Wavelet {
     return matrix;
   }
 
-  RHaar_transByLevel(level, matrix) {
-    if (level > 7) {
-      level = 7;
+  RHaar_transByLevel(matrix) {
+    if (this.level > 7) {
+      this.level = 7;
     }
     var m_ = this.RHaar_transform(matrix);
-    if (level !== 0) {
-      for (let l = 0; l < level; l++) {
+    if (this.level !== 0) {
+      for (let l = 0; l < this.level; l++) {
         this.SubbandSizeX = parseInt(this.SubbandSizeX / 2);
         this.SubbandSizeY = parseInt(this.SubbandSizeY / 2);
         m_ = this.RHaar_transform(m_);
@@ -140,15 +173,15 @@ class Wavelet {
     return { red: m_red, green: m_green, blue: m_blue };
   }
 
-  RHaar_destransByLevel(level, matrix) {
-    if (level > 7) {
-      level = 7;
+  RHaar_destransByLevel(matrix) {
+    if (this.level > 7) {
+      this.level = 7;
     }
-    this.SubbandSizeX = parseInt(matrix[0].length / 2 ** level);
-    this.SubbandSizeY = parseInt(matrix[0].length / 2 ** level);
+    this.SubbandSizeX = parseInt(matrix[0].length / 2 ** this.level);
+    this.SubbandSizeY = parseInt(matrix.length / 2 ** this.level);
     let m_ = RHaar_destransform(matrix);
-    if (level != 0) {
-      for (let l = 0; l < level; l++) {
+    if (this.level != 0) {
+      for (let l = 0; l < this.level; l++) {
         this.SubbandSizeX = parseInt(this.SubbandSizeX * 2);
         this.SubbandSizeY = parseInt(this.SubbandSizeY * 2);
         m_ = RHaar_destransform(m_);
@@ -156,6 +189,28 @@ class Wavelet {
     }
     return m_;
   }
+
+  RHaar_destransByLevelRGB(inputArray) {
+    if (this.level > 7) {
+      this.level = 7;
+    }
+
+    var m_red = this.RHaar_destransform(inputArray.red);
+    var m_green = this.RHaar_destransform(inputArray.green);
+    var m_blue = this.RHaar_destransform(inputArray.blue);
+    if (this.level !== 0) {
+      for (let l = 0; l < this.level; l++) {
+        this.SubbandSizeX = parseInt(this.SubbandSizeX * 2);
+        this.SubbandSizeY = parseInt(this.SubbandSizeY * 2);
+        m_red = this.RHaar_destransform(m_red);
+        m_green = this.RHaar_destransform(m_green);
+        m_blue = this.RHaar_destransform(m_blue);
+      }
+    }
+    this.inputArray = { red: m_red, green: m_green, blue: m_blue };
+    return { red: m_red, green: m_green, blue: m_blue };
+  }
+
 
   trans_abs(matrix) {
     for (let x = 0; x < matrix[0].length; x++) {
