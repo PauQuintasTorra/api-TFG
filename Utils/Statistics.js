@@ -43,9 +43,17 @@ class Statistics{
         return mean;
     }
 
-    getVarianze(){
-        const counter = matrix.red[0].length * matrix.red.length;
-        const mean = this.getMean();
+    getVarianzeRGB(inputArray){
+        const varianze_red = this.getVarianze(inputArray.red);
+        const varianze_green = this.getVarianze(inputArray.green);
+        const varianze_blue = this.getVarianze(inputArray.blue);
+
+        return (varianze_red + varianze_green + varianze_blue) / 3;
+    }
+
+    getVarianze(matrix){
+        const counter = matrix[0].length * matrix.length;
+        const mean = this.getMean(matrix);
         let varianze = 0;
         for(let x = 0; x < matrix[0].length; x++){
             for (let y = 0; y < matrix.length; y++){
@@ -56,8 +64,16 @@ class Statistics{
         return varianze;
     }
 
+    getEntropyOrderZeroRGB(inputArray){
+        const entropy_red = this.getEntropyOrderZero(inputArray.red);
+        const entropy_green = this.getEntropyOrderZero(inputArray.green);
+        const entropy_blue = this.getEntropyOrderZero(inputArray.blue);
+
+        return (entropy_red + entropy_green + entropy_blue) / 3;
+    }
+
     getEntropyOrderZero(matrix){
-        const counter = matrix.red[0].length * matrix.red.length;
+        const counter = matrix.length * matrix.length;
         let valors = {};
         let entropy = 0;
         for(let y = 0; y < matrix.length; y++){

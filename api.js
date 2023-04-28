@@ -46,11 +46,11 @@ app.post(
     
     // STATISTICS
     const statistics_original = new Statistics();
-    console.log("Mitja de la imatge", statistics_original.getMeanRGB(ddd));
-    console.log("Mitja de la imatge", statistics_original.getMeanRGB(aa));
-    console.log(statistics_original.getMean(aa.red));
-    console.log(statistics_original.getMean(aa.green));
-    console.log(statistics_original.getMean(aa.blue));
+    // console.log("Mitja de la imatge", statistics_original.getVarianze(ddd));
+    console.log("Mitja de la imatge", statistics_original.getEntropyOrderZeroRGB(aa));
+    console.log(statistics_original.getEntropyOrderZero(aa.red));
+    console.log(statistics_original.getEntropyOrderZero(aa.green));
+    console.log(statistics_original.getEntropyOrderZero(aa.blue));
     // const entropyRed_original = new Statistics(aa.red);
     // console.log("Entropia red", entropyRed_original.getEntropyOrderZero());
     // console.log("Entropia wave", entropyRed_wavelet.getEntropyOrderZero());
@@ -59,7 +59,7 @@ app.post(
     const quantizer = new Quantizer(10);
     const a = quantizer.mainQuantize(aa, formatSelected);
     const b = quantizer.mainDequantize(a, formatSelected);
-    console.log("Mitja de la imatge", statistics_original.getMeanRGB(b));
+    console.log("Mitja de la imatge", statistics_original.getEntropyOrderZeroRGB(b));
     
     res.send(enviar);
     empty.deleteAll(); 
