@@ -87,8 +87,8 @@ app.post(
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
 
-    const mainCreate = new LetsCreate(boxes, originalFormat);
-    const arrayToSend = mainCreate.mainCreate(inputArray);
+    const mainCreate = new LetsCreate(inputArray, boxes, originalFormat);
+    const arrayToSend = mainCreate.mainCreate();
 
     const enviar = await imatge.exportInputArray(arrayToSend,originalFormat, originalFormat)
     res.send(enviar);    

@@ -1,11 +1,12 @@
+const Quantizer = require("./Quantizer");
 const Wavelet = require("./Wavelet");
 
 class LetsCreate{
 
-  constructor(boxes, originalFormat){
+  constructor(image, boxes, originalFormat){
       this.originalFormat = originalFormat;
       this.boxes = boxes;
-      this.image = null;
+      this.image = image;
   }
 
 
@@ -20,13 +21,15 @@ class LetsCreate{
               const subBandY = inputArray.red.length;
               const levels = this.boxes[i].class.waveletLevel;
               const wavelet = new Wavelet(subBandX,subBandY, levels);
-              this.image = wavelet.mainTransform(inputArray, this.originalFormat);
+              this.image = wavelet.mainTransform(this.image, this.originalFormat);
+              break;
 
-              console.log("hola");
-              break;
             case 'Quantizer':
-              console.log("bona tarda");
+              const q_step = this.boxes[i].class.q_step;
+              const quantizer = new Quantizer(q_step);
+              this.image =  quantizer.mainQuantize(this.image, this.originalFormat)
               break;
+
             case 'ArithmeticOperation':
               console.log("bon dia");
           
