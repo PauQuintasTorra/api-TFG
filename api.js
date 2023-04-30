@@ -89,8 +89,9 @@ app.post(
 
     const mainCreate = new LetsCreate(inputArray, boxes, originalFormat);
     const arrayToSend = mainCreate.mainCreate();
+    const ImageEndProcess = mainCreate.mainDecreate();
 
-    const enviar = await imatge.exportInputArray(arrayToSend,originalFormat, originalFormat)
+    const enviar = await imatge.exportInputArray(ImageEndProcess,originalFormat, originalFormat)
     res.send(enviar);    
     
     empty.deleteAll(); 

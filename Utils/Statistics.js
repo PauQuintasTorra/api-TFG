@@ -8,7 +8,6 @@ class Statistics{
         const max_green = math.max(math.flatten(inputArray.green));
         const max_blue = math.max(math.flatten(inputArray.blue));
         const max_totals = [max_red,max_green,max_blue];
-        console.log(max_totals);
 
         return math.max(math.flatten(max_totals));
     }
@@ -18,7 +17,6 @@ class Statistics{
         const min_green = math.min(math.flatten(inputArray.green));
         const min_blue = math.min(math.flatten(inputArray.blue));
         const min_totals = [min_red,min_green,min_blue];
-        console.log(min_totals);
 
         return math.min(math.flatten(min_totals));
     }
