@@ -78,20 +78,25 @@ app.post(
   "/api/seeImage",
   upload.fields([{ name: "image" },  {name: "originalFormat"}, { name: "boxes" },]),
   async (req, res) => {
+    const processLogger = {}
+    processLogger.nameImage = req.files["image"][0].originalname;
+    processLogger.timestamp = Date.now() + '-' + Math.round(Math.random() * 1000000);
     const empty = new ManageFolders("./uploads");
     const imatge = new ImageLoader(req.files["image"][0].path);
     const boxes = JSON.parse(req.body.boxes);
     const originalFormat = req.body.originalFormat;
-    console.log(originalFormat);
     console.log(boxes);
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
 
-    const mainCreate = new LetsCreate(inputArray, boxes, originalFormat);
+    const mainCreate = new LetsCreate(inputArray, boxes, originalFormat, processLogger);
     const arrayToSend = mainCreate.mainCreate();
     const ImageEndProcess = mainCreate.mainDecreate();
 
-    const enviar = await imatge.exportInputArray(ImageEndProcess,originalFormat, originalFormat)
+    const final = await imatge.exportInputArray(ImageEndProcess,originalFormat, originalFormat)
+    const enviar = final.image;
+    const proces = final.proces;
+    console.log(proces);
     res.send(enviar);    
     
     empty.deleteAll(); 

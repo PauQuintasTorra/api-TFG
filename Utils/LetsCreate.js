@@ -1,20 +1,23 @@
 const ArithmeticOperation = require("./ArithmeticOperation");
 const Metrics = require("./Metrics");
 const Quantizer = require("./Quantizer");
+const Statistics = require("./Statistics");
 const Wavelet = require("./Wavelet");
 
 class LetsCreate{
 
-  constructor(image, boxes, originalFormat){
+  constructor(image, boxes, originalFormat, processLogger){
       this.originalFormat = originalFormat;
       this.boxes = boxes;
       this.image = image;
       this.imageSend = image;
-      this.imageOriginal = JSON.parse(JSON.stringify(this.image))
+      this.imageOriginal = JSON.parse(JSON.stringify(this.image));
+      this.processLogger = processLogger;
   }
 
 
   mainCreate(){
+    const statistics = new Statistics();
     for (let i = 0; i < this.boxes.length; i++){
       const className = this.boxes[i].class.type;
         
@@ -51,7 +54,14 @@ class LetsCreate{
               this.image = arithmeticOperation.mainDivideValue(this.image, this.originalFormat);
               break;
           }
-
+        this.processLogger.proces[i] = {
+          class: this.boxes[i].class,
+          max: statistics.getMax(this.image),
+          min: statistics.getMin(this.image),
+          entropy: statistics.getEntropyOrderZeroRGB(this.image),
+          varianze: statistics.getVarianzeRGB(this.image),
+          mean: statistics.getMeanRGB(this.image)
+        }
       }
     }
 
@@ -106,7 +116,12 @@ class LetsCreate{
     console.log("PSNR: ", metrics.getPSNR_RGB(this.image, this.imageOriginal));
     console.log("PAE: ", metrics.getPAE_RGB(this.image, this.imageOriginal));
     console.log("MSE: ", metrics.getMSE_RGB(this.image, this.imageOriginal));
-    return this.image;
+    this.processLogger.finalStats = {
+      psnr: metrics.getPSNR_RGB(this.image, this.imageOriginal),
+      pae: metrics.getPAE_RGB(this.image, this.imageOriginal),
+      mse: metrics.getMSE_RGB(this.image, this.imageOriginal)
+    }
+    return {image: this.image, process: this.processLogger};
   }
 
   abs_all(matrix){
