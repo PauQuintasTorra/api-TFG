@@ -47,6 +47,11 @@ class ManageImage {
     });
   }
 
+  extractFormat(name) {
+    const result = name.split(".");
+    return result[result.length - 1].toString().toLowerCase();
+  }
+
   getHeight() {
     return this.height;
   }

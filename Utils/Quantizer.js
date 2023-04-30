@@ -7,7 +7,7 @@ class Quantizer{
         this.q_step = q_step;
     }
 
-    mainQuantize(inputArray, formatSelected) {
+    mainQuantize(inputArray, formatImage) {
         this.inputArray = inputArray;
 
         const quan_red = this.quantize(inputArray.red);
@@ -27,11 +27,11 @@ class Quantizer{
           });
         });
         // Save the image as a JPEG file
-        image.write(`quantizer_${this.q_step}.${formatSelected}`);
+        image.write(`quantizer_${this.q_step}.${formatImage}`);
         return {red: quan_red, green: quan_green, blue: quan_blue};
     }
 
-    mainDequantize(inputArray, formatSelected) {
+    mainDequantize(inputArray, formatImage) {
         this.inputArray = inputArray;
 
         const dequan_red = this.dequantize(inputArray.red);
@@ -51,7 +51,7 @@ class Quantizer{
           });
         });
         // Save the image as a JPEG file
-        image.write(`dequantizer_${this.q_step}.${formatSelected}`);
+        image.write(`dequantizer_${this.q_step}.${formatImage}`);
         return {red: dequan_red, green: dequan_green, blue: dequan_blue};
     }
 

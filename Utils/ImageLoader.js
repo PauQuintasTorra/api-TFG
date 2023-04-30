@@ -63,10 +63,7 @@ class ImageLoader {
       });
   }
 
-  extractFormat(name) {
-    const result = name.split(".");
-    return result[result.length - 1].toString().toLowerCase();
-  }
+
 }
 
 module.exports = ImageLoader;

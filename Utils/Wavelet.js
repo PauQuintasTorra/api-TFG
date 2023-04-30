@@ -8,7 +8,7 @@ class Wavelet {
     this.level = level;
   }
  
-  mainTransform(inputArray, formatSelected) {
+  mainTransform(inputArray, formatImage) {
     const trans_inputArray = this.RHaar_transByLevelRGB(inputArray);
 
     const returner = JSON.parse(JSON.stringify(trans_inputArray));
@@ -30,11 +30,11 @@ class Wavelet {
       });
     });
     // Save the image as a JPEG file
-    image.write(`wavelet_Haar_${this.level}.${formatSelected}`);
+    image.write(`wavelet_Haar_${this.level}.${formatImage}`);
     return returner;
   }
 
-  mainDestransform(inputArray, formatSelected) {
+  mainDestransform(inputArray, formatImage) {
     this.SubbandSizeX = parseInt(inputArray.red[0].length / (2 ** this.level));
     this.SubbandSizeY = parseInt(inputArray.red.length / (2 ** this.level));
 
@@ -57,7 +57,7 @@ class Wavelet {
       });
     });
     // Save the image as a JPEG file
-    image.write(`reverse_wavelet_Haar_${this.level}.${formatSelected}`);
+    image.write(`reverse_wavelet_Haar_${this.level}.${formatImage}`);
     return destrans_inputArray;
   }
 

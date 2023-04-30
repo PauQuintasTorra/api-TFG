@@ -10,6 +10,7 @@ const Wavelet = require("./Utils/Wavelet");
 const Statistics = require("./Utils/Statistics");
 const LetsCreate = require("./Utils/LetsCreate");
 const Quantizer = require("./Utils/Quantizer");
+const ArithmeticOperation = require("./Utils/ArithmeticOperation");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -26,6 +27,7 @@ app.post(
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
     const aa = JSON.parse(JSON.stringify(inputArray));
+    const provaAr = JSON.parse(JSON.stringify(inputArray));
     const height = im.getHeight();
     const width = im.getWidth();
 
@@ -33,11 +35,15 @@ app.post(
 
     console.log(req.files["image"][0].path)
     const imatge = new ImageLoader(req.files["image"][0].path);
-    const formatImage = imatge.extractFormat(
+    const formatImage = im.extractFormat(
       req.files["image"][0].originalname
     );
 
     const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
+
+    // ARITHMETIC OPERATION
+    const sumar = new ArithmeticOperation(5);
+    const suma_feta = sumar.mainDivideValue(provaAr, formatImage);
 
     // WAVELET
     const wavelet = new Wavelet(width, height, 2);
@@ -56,13 +62,13 @@ app.post(
     // console.log("Entropia wave", entropyRed_wavelet.getEntropyOrderZero());
 
     // QUANTITZADOR
-    const quantizer = new Quantizer(100);
+    const quantizer = new Quantizer(10);
     const a = quantizer.mainQuantize(aa, formatImage);
-    const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
+    // const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
     const b = quantizer.mainDequantize(a, formatImage);
     console.log("Mitja de la imatge", statistics_original.getEntropyOrderZeroRGB(b));
     
-    // const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
+    const enviar = await imatge.exportInputArray(provaAr,formatImage, formatSelected)
     res.send(enviar);
     empty.deleteAll(); 
   }
@@ -72,13 +78,22 @@ app.post(
   "/api/seeImage",
   upload.fields([{ name: "image" },  {name: "originalFormat"}, { name: "boxes" },]),
   async (req, res) => {
+    const empty = new ManageFolders("./uploads");
+    const imatge = new ImageLoader(req.files["image"][0].path);
     const boxes = JSON.parse(req.body.boxes);
-    console.log(boxes)
+    const originalFormat = req.body.originalFormat;
+    console.log(originalFormat);
+    console.log(boxes);
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
 
-    const mainCreate = new LetsCreate(inputArray, boxes);
-    mainCreate.mainCreate();
+    const mainCreate = new LetsCreate(boxes, originalFormat);
+    const arrayToSend = mainCreate.mainCreate(inputArray);
+
+    const enviar = await imatge.exportInputArray(arrayToSend,originalFormat, originalFormat)
+    res.send(enviar);    
+    
+    empty.deleteAll(); 
 
   }
 );
