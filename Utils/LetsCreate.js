@@ -1,3 +1,4 @@
+const ArithmeticOperation = require("./ArithmeticOperation");
 const Metrics = require("./Metrics");
 const Quantizer = require("./Quantizer");
 const Wavelet = require("./Wavelet");
@@ -14,8 +15,6 @@ class LetsCreate{
 
 
   mainCreate(){
-
-    const metrics = new Metrics();
     for (let i = 0; i < this.boxes.length; i++){
       const className = this.boxes[i].class.type;
         
@@ -35,10 +34,24 @@ class LetsCreate{
           break;
 
         case 'ArithmeticOperation':
-          console.log("bon dia");
-      
-        default:
-          break;
+          const value = this.boxes[i].class.operationNumber;
+          const operationType = this.boxes[i].class.operationType;
+          const arithmeticOperation = new ArithmeticOperation(value);
+          switch (operationType) {
+            case 'Add':
+              this.image = arithmeticOperation.mainAddValue(this.image, this.originalFormat);
+              break;
+            case 'Sub':
+              this.image = arithmeticOperation.mainSubstractValue(this.image, this.originalFormat);
+              break;
+            case 'Mult':
+              this.image = arithmeticOperation.mainMultiplyValue(this.image, this.originalFormat);
+              break;
+            case 'Div':
+              this.image = arithmeticOperation.mainDivideValue(this.image, this.originalFormat);
+              break;
+          }
+
       }
     }
 
@@ -70,10 +83,23 @@ class LetsCreate{
           break;
 
         case 'ArithmeticOperation':
-          console.log("bon dia");
-      
-        default:
-          break;
+          const value = this.boxes[i].class.operationNumber;
+          const operationType = this.boxes[i].class.operationType;
+          const arithmeticOperation = new ArithmeticOperation(value);
+          switch (operationType) {
+            case 'Add':
+              this.image = arithmeticOperation.mainSubstractValue(this.image, this.originalFormat);
+              break;
+            case 'Sub':
+              this.image = arithmeticOperation.mainAddValue(this.image, this.originalFormat);
+              break;
+            case 'Mult':
+              this.image = arithmeticOperation.mainDivideValue(this.image, this.originalFormat);
+              break;
+            case 'Div':
+              this.image = arithmeticOperation.mainMultiplyValue(this.image, this.originalFormat);
+              break;
+          }
       }
         
     }

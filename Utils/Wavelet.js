@@ -197,7 +197,6 @@ class Wavelet {
     var m_blue = this.RHaar_destransform(inputArray.blue);
     if (this.level !== 0) {
       for (let l = 0; l < this.level; l++) {
-        console.log(this.SubbandSizeX)
         this.SubbandSizeX = parseInt(this.SubbandSizeX * 2);
         this.SubbandSizeY = parseInt(this.SubbandSizeY * 2);
         m_red = this.RHaar_destransform(m_red);
