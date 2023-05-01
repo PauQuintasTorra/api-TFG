@@ -95,20 +95,16 @@ app.post(
 
     const enviar = await imatge.exportInputArray(final.image,originalFormat, originalFormat)
     const proces = final.process;
-    console.log(proces);
-    res.send(enviar);    
+    console.log(proces);   
     
-    empty.deleteAll(); 
 
     const data = JSON.stringify(proces);
     await fs.writeFile('data.json', data, (err) =>{
       if (err) throw err
     });
 
-    // ENVIAR EL DOCUMENT.TXT AL FRONT
-    // const fileContents = fs.readFileSync('example.txt', 'utf8');
-    // // Parse the contents into a JavaScript object
-    // const data = JSON.parse(fileContents);
+    res.send({image: enviar, data: data });
+    empty.deleteAll(); 
   }
 );
 
