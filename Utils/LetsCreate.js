@@ -18,6 +18,7 @@ class LetsCreate{
 
   mainCreate(){
     const statistics = new Statistics();
+    this.processLogger.progress = [];
     for (let i = 0; i < this.boxes.length; i++){
       const className = this.boxes[i].class.type;
         
@@ -54,14 +55,15 @@ class LetsCreate{
               this.image = arithmeticOperation.mainDivideValue(this.image, this.originalFormat);
               break;
           }
-        this.processLogger.proces[i] = {
-          class: this.boxes[i].class,
-          max: statistics.getMax(this.image),
-          min: statistics.getMin(this.image),
-          entropy: statistics.getEntropyOrderZeroRGB(this.image),
-          varianze: statistics.getVarianzeRGB(this.image),
-          mean: statistics.getMeanRGB(this.image)
-        }
+        
+      }
+      this.processLogger.progress[i] = {
+        class: this.boxes[i].class,
+        max: statistics.getMax(this.image),
+        min: statistics.getMin(this.image),
+        entropy: statistics.getEntropyOrderZeroRGB(this.image),
+        varianze: statistics.getVarianzeRGB(this.image),
+        mean: statistics.getMeanRGB(this.image)
       }
     }
 

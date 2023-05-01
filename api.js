@@ -91,11 +91,10 @@ app.post(
 
     const mainCreate = new LetsCreate(inputArray, boxes, originalFormat, processLogger);
     const arrayToSend = mainCreate.mainCreate();
-    const ImageEndProcess = mainCreate.mainDecreate();
+    const final = mainCreate.mainDecreate();
 
-    const final = await imatge.exportInputArray(ImageEndProcess,originalFormat, originalFormat)
-    const enviar = final.image;
-    const proces = final.proces;
+    const enviar = await imatge.exportInputArray(final.image,originalFormat, originalFormat)
+    const proces = final.process;
     console.log(proces);
     res.send(enviar);    
     
