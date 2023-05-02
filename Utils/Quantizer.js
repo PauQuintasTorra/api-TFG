@@ -13,9 +13,9 @@ class Quantizer{
         const quan_red = this.quantize(inputArray.red);
         const quan_green = this.quantize(inputArray.green);
         const quan_blue = this.quantize(inputArray.blue);
-        
+    
         // Create a new Jimp image with the same dimensions as the input array
-        const image = new Jimp(quan_red[0].length, quan_blue.length);
+        const image = new Jimp(quan_red[0].length, quan_red.length);
     
         // Iterate over the input arrays and set the color of each pixel in the image
         quan_red.forEach((row, y) => {
@@ -33,7 +33,6 @@ class Quantizer{
 
     mainDequantize(inputArray, formatImage) {
         this.inputArray = inputArray;
-
         const dequan_red = this.dequantize(inputArray.red);
         const dequan_green = this.dequantize(inputArray.green);
         const dequan_blue = this.dequantize(inputArray.blue);

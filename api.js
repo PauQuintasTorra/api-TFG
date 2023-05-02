@@ -38,7 +38,6 @@ app.post(
     const formatImage = im.extractFormat(
       req.files["image"][0].originalname
     );
-
     const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
 
     // ARITHMETIC OPERATION
@@ -62,13 +61,14 @@ app.post(
     // console.log("Entropia wave", entropyRed_wavelet.getEntropyOrderZero());
 
     // QUANTITZADOR
-    const quantizer = new Quantizer(10);
+    const quantizer = new Quantizer(6);
     const a = quantizer.mainQuantize(aa, formatImage);
-    // const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
+    //const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
     const b = quantizer.mainDequantize(a, formatImage);
     console.log("Mitja de la imatge", statistics_original.getEntropyOrderZeroRGB(b));
     
-    const enviar = await imatge.exportInputArray(provaAr,formatImage, formatSelected)
+    const name_path = await imatge.exportInputArray(b,formatImage);
+    const enviar = await imatge.getReadyToSend(name_path, formatSelected);
     res.send(enviar);
     empty.deleteAll(); 
   }
@@ -93,7 +93,8 @@ app.post(
     const arrayToSend = mainCreate.mainCreate();
     const final = mainCreate.mainDecreate();
 
-    const enviar = await imatge.exportInputArray(final.image,originalFormat, originalFormat)
+    const name_path = await imatge.exportInputArray(final.image,originalFormat);
+    const enviar = await imatge.getReadyToSend(name_path, originalFormat);
     const proces = final.process;
     console.log(proces);   
     

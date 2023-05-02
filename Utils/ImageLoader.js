@@ -30,7 +30,7 @@ class ImageLoader {
       });
   }
 
-  async exportInputArray(inputArray, formatOriginal, formatSelected){
+  async exportInputArray(inputArray, formatOriginal){
     
     const image = new Jimp(inputArray.red[0].length, inputArray.red.length);
     
@@ -43,10 +43,13 @@ class ImageLoader {
       });
     });
     // Save the image as a JPEG file
-    await image.write(`final_result.${formatOriginal}`);
+    image.write(`final_result.${formatOriginal}`);
+    return `final_result.${formatOriginal}`;
+  }
 
+  async getReadyToSend(name, formatSelected){
     const outputFile = `final_result_front.${formatSelected}`;
-    const binaryData = await fs.readFileSync(`final_result.${formatOriginal}`);
+    const binaryData = await fs.readFileSync(name);
 
     return sharp(binaryData)
       .toFormat(formatSelected)
@@ -62,7 +65,6 @@ class ImageLoader {
         console.error(err);
       });
   }
-
 
 }
 
