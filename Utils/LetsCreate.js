@@ -79,7 +79,7 @@ class LetsCreate{
     this.abs_all(this.imageSend.red);
     this.abs_all(this.imageSend.green);
     this.abs_all(this.imageSend.blue);
-    return this.imageSend;
+    return this.image;
   }
 
   mainDecreate(){

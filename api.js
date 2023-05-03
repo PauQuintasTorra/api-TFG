@@ -11,6 +11,7 @@ const Statistics = require("./Utils/Statistics");
 const LetsCreate = require("./Utils/LetsCreate");
 const Quantizer = require("./Utils/Quantizer");
 const ArithmeticOperation = require("./Utils/ArithmeticOperation");
+const EntropyEncoder = require("./Utils/EntropyEncoder");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -91,6 +92,9 @@ app.post(
 
     const mainCreate = new LetsCreate(inputArray, boxes, originalFormat, processLogger);
     const arrayToSend = mainCreate.mainCreate();
+    const entco = new EntropyEncoder();
+    const imp = entco.codificacioZlib(arrayToSend);
+    console.log(imp);
     const final = mainCreate.mainDecreate();
 
     const name_path = await imatge.exportInputArray(final.image,originalFormat);
