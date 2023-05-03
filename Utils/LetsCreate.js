@@ -115,9 +115,9 @@ class LetsCreate{
       }
         
     }
-    console.log("PSNR: ", metrics.getPSNR_RGB(this.image, this.imageOriginal));
-    console.log("PAE: ", metrics.getPAE_RGB(this.image, this.imageOriginal));
-    console.log("MSE: ", metrics.getMSE_RGB(this.image, this.imageOriginal));
+    // console.log("PSNR: ", metrics.getPSNR_RGB(this.image, this.imageOriginal));
+    // console.log("PAE: ", metrics.getPAE_RGB(this.image, this.imageOriginal));
+    // console.log("MSE: ", metrics.getMSE_RGB(this.image, this.imageOriginal));
     this.processLogger.finalStats = {
       psnr: metrics.getPSNR_RGB(this.image, this.imageOriginal),
       pae: metrics.getPAE_RGB(this.image, this.imageOriginal),

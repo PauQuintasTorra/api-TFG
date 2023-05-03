@@ -94,7 +94,6 @@ app.post(
     const final = mainCreate.mainDecreate();
 
     const name_path = await imatge.exportInputArray(final.image,originalFormat);
-    const enviar = await imatge.getReadyToSend(name_path, originalFormat);
     const proces = final.process;
     console.log(proces);   
     
@@ -104,10 +103,20 @@ app.post(
       if (err) throw err
     });
 
-    res.send({image: enviar, data: data });
+    res.send(data);
     empty.deleteAll(); 
   }
 );
+
+app.post("/api/getFinalImage", async (req, res) => {
+  console.log(req);
+  const format = req.query.format;
+  console.log(format);
+  const filePath = `final_result.jpg`;
+  const enviar = await imatge.getReadyToSend(filePath, 'jpg');
+
+  res.send(enviar);
+});
 
 app.post("/api/downloadImageURL", async (req, res) => {
   console.log(req);
