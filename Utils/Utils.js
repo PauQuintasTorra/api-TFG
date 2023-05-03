@@ -27,8 +27,6 @@ function normalizeMatrix(matrix){
         return matrix_abs;
     }
     
-
-
 }
 
 

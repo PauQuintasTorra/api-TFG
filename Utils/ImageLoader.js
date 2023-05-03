@@ -3,8 +3,7 @@ const sharp = require("sharp");
 const Jimp = require("jimp");
 
 class ImageLoader {
-  constructor(path) {
-    this.path = path;
+  constructor() {
   }
 
   async exportRAW(format, selected) {

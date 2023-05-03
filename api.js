@@ -82,7 +82,7 @@ app.post(
     processLogger.nameImage = req.files["image"][0].originalname;
     processLogger.timestamp = Date.now() + '-' + Math.round(Math.random() * 1000000);
     const empty = new ManageFolders("./uploads");
-    const imatge = new ImageLoader(req.files["image"][0].path);
+    const imatge = new ImageLoader();
     const boxes = JSON.parse(req.body.boxes);
     const originalFormat = req.body.originalFormat;
     console.log(boxes);
@@ -109,9 +109,8 @@ app.post(
 );
 
 app.post("/api/getFinalImage", async (req, res) => {
-  console.log(req);
-  const format = req.query.format;
-  console.log(format);
+  const imatge = new ImageLoader();
+
   const filePath = `final_result.jpg`;
   const enviar = await imatge.getReadyToSend(filePath, 'jpg');
 

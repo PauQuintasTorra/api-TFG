@@ -19,6 +19,14 @@ class LetsCreate{
   mainCreate(){
     const statistics = new Statistics();
     this.processLogger.progress = [];
+    this.processLogger.initStats = {
+      max: statistics.getMax(this.image),
+      min: statistics.getMin(this.image),
+      entropy: statistics.getEntropyOrderZeroRGB(this.image),
+      varianze: statistics.getVarianzeRGB(this.image),
+      mean: statistics.getMeanRGB(this.image)
+    }
+
     for (let i = 0; i < this.boxes.length; i++){
       const className = this.boxes[i].class.type;
         
