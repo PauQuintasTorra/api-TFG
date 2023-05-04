@@ -79,6 +79,7 @@ app.post(
   "/api/seeImage",
   upload.fields([{ name: "image" },  {name: "originalFormat"}, { name: "boxes" },]),
   async (req, res) => {
+    
     const processLogger = {}
     processLogger.nameImage = req.files["image"][0].originalname;
     processLogger.timestamp = Date.now() + '-' + Math.round(Math.random() * 1000000);
@@ -88,16 +89,18 @@ app.post(
     const originalFormat = req.body.originalFormat;
     console.log(boxes);
     const im = new ManageImage(req.files["image"][0].path);
+    const height = im.getHeight();
+    const width = im.getWidth();
     const inputArray = await im.pathToArrayRGB();
 
     const mainCreate = new LetsCreate(inputArray, boxes, originalFormat, processLogger);
     const arrayToSend = mainCreate.mainCreate();
     const entco = new EntropyEncoder();
-    const imp = entco.codificacioZlib(arrayToSend);
-    console.log(imp);
+    
     const final = mainCreate.mainDecreate();
 
     const name_path = await imatge.exportInputArray(final.image,originalFormat);
+    const imp = entco.codificacioZlib(height,width);
     const proces = final.process;
     console.log(proces);   
     
