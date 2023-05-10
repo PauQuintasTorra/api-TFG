@@ -61,14 +61,14 @@ class Quantizer{
         return {red: dequan_red, green: dequan_green, blue: dequan_blue};
     }
 
-
+    //falta el signe
     quantize(matrix){
         for(let y = 0; y < matrix.length; y++){
             for(let x = 0; x < matrix[0].length; x++){
-                const abs_number = matrix[y][x];
-                const number = Math.floor(abs_number / this.q_step);
+                const abs_number = math.abs(matrix[y][x]);
+                const number = math.floor(abs_number / this.q_step);
                 if (matrix[y][x] != 0){
-                    matrix[y][x] = number * parseInt( Math.floor(abs_number / matrix[y][x]));
+                    matrix[y][x] = number * parseInt(math.floor(abs_number / matrix[y][x]));
                 } else{
                     matrix[y][x] = 0;
                 }

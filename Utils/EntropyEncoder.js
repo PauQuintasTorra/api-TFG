@@ -11,10 +11,12 @@ class EntropyEncoder{
 
         // datos de imagen sin comprimir
         const imageData = fs.readFileSync(filename);
+        console.log(imageData);
         
         // datos de imagen comprimidos
         const compressedImageData = zlib.deflateSync(imageData);
         
+        console.log('compressedData: ', compressedImageData);
         // cantidad de bytes de la imagen sin comprimir
         const uncompressedSize = imageData.length;
         
@@ -27,7 +29,7 @@ class EntropyEncoder{
         // ancho y alto de la imagen
         const width = w;
         const height = h;
-        
+        console.log(width, height);
         // cantidad total de bits por píxel
         const bitsPerPixel = 24;
         
