@@ -34,11 +34,9 @@ app.post(
 
     const formatSelected = req.body["formatSelected"];
 
-    console.log(req.files["image"][0].path)
+    console.log(req.files["image"][0].path);
     const imatge = new ImageLoader(req.files["image"][0].path);
-    const formatImage = im.extractFormat(
-      req.files["image"][0].originalname
-    );
+    const formatImage = im.extractFormat(req.files["image"][0].originalname);
     const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
 
     // ARITHMETIC OPERATION
@@ -49,11 +47,14 @@ app.post(
     const wavelet = new Wavelet(width, height, 2);
     const rrr = wavelet.mainTransform(inputArray, formatImage);
     const ddd = wavelet.mainDestransform(rrr, formatImage);
-    
+
     // STATISTICS
     const statistics_original = new Statistics();
     // console.log("Mitja de la imatge", statistics_original.getVarianze(ddd));
-    console.log("Mitja de la imatge", statistics_original.getEntropyOrderZeroRGB(aa));
+    console.log(
+      "Mitja de la imatge",
+      statistics_original.getEntropyOrderZeroRGB(aa)
+    );
     console.log(statistics_original.getEntropyOrderZero(aa.red));
     console.log(statistics_original.getEntropyOrderZero(aa.green));
     console.log(statistics_original.getEntropyOrderZero(aa.blue));
@@ -66,23 +67,31 @@ app.post(
     const a = quantizer.mainQuantize(aa, formatImage);
     //const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
     const b = quantizer.mainDequantize(a, formatImage);
-    console.log("Mitja de la imatge", statistics_original.getEntropyOrderZeroRGB(b));
-    
-    const name_path = await imatge.exportInputArray(b,formatImage);
+    console.log(
+      "Mitja de la imatge",
+      statistics_original.getEntropyOrderZeroRGB(b)
+    );
+
+    const name_path = await imatge.exportInputArray(b, formatImage);
     const enviar = await imatge.getReadyToSend(name_path, formatSelected);
     res.send(enviar);
-    empty.deleteAll(); 
+    empty.deleteAll();
   }
 );
 
 app.post(
   "/api/seeImage",
-  upload.fields([{ name: "image" },  {name: "originalFormat"}, { name: "boxes" },]),
+  upload.fields([
+    { name: "image" },
+    { name: "originalFormat" },
+    { name: "boxes" },
+  ]),
   async (req, res) => {
-    
-    const processLogger = {}
+    const processLogger = {};
     processLogger.nameImage = req.files["image"][0].originalname;
-    processLogger.timestamp = Date.now() + '-' + Math.round(Math.random() * 1000000);
+    processLogger.timestamp =
+      Date.now() + "-" + Math.round(Math.random() * 1000000);
+    console.log(req.files["image"][0]);
     const empty = new ManageFolders("./uploads");
     const imatge = new ImageLoader();
     const boxes = JSON.parse(req.body.boxes);
@@ -93,25 +102,34 @@ app.post(
     const width = im.getWidth();
     const inputArray = await im.pathToArrayRGB();
 
-    const mainCreate = new LetsCreate(inputArray, boxes, originalFormat, processLogger);
+    const mainCreate = new LetsCreate(
+      inputArray,
+      boxes,
+      originalFormat,
+      processLogger
+    );
     const arrayToSend = mainCreate.mainCreate();
     const entco = new EntropyEncoder();
-    
+
     const final = mainCreate.mainDecreate();
 
-    const name_path = await imatge.exportInputArray(final.image,originalFormat);
-    const imp = entco.codificacioZlib(height,width);
+    imatge.exportInputArray(final.image, originalFormat).then((name) => {
+      const name_path = name;
+      entco.codificacioZlib(name_path).then(() => {
+        entco.descodificacio();
+      });
+    });
+
     const proces = final.process;
-    console.log(proces);   
-    
+    console.log(proces);
 
     const data = JSON.stringify(proces);
-    await fs.writeFile('data.json', data, (err) =>{
-      if (err) throw err
+    await fs.writeFile("data.json", data, (err) => {
+      if (err) throw err;
     });
 
     res.send(data);
-    empty.deleteAll(); 
+    empty.deleteAll();
   }
 );
 
@@ -119,7 +137,7 @@ app.post("/api/getFinalImage", async (req, res) => {
   const imatge = new ImageLoader();
 
   const filePath = `final_result.jpg`;
-  const enviar = await imatge.getReadyToSend(filePath, 'jpg');
+  const enviar = await imatge.getReadyToSend(filePath, "jpg");
 
   res.send(enviar);
 });

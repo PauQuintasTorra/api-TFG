@@ -1,10 +1,10 @@
 const fs = require("fs");
 const sharp = require("sharp");
 const Jimp = require("jimp");
+const { reject } = require("lodash");
 
 class ImageLoader {
-  constructor() {
-  }
+  constructor() {}
 
   async exportRAW(format, selected) {
     const binaryDataFront = await fs.readFileSync(this.path);
@@ -29,24 +29,31 @@ class ImageLoader {
       });
   }
 
-  async exportInputArray(inputArray, formatOriginal){
-    
-    const image = new Jimp(inputArray.red[0].length, inputArray.red.length);
-    
-    inputArray.red.forEach((row, y) => {
-      row.forEach((red, x) => {
-        const green = inputArray.green[y][x];
-        const blue = inputArray.blue[y][x];
-        const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-        image.setPixelColor(pixelColor, x, y);
+  async exportInputArray(inputArray, formatOriginal) {
+    return new Promise((resolve, reject) => {
+      const image = new Jimp(inputArray.red[0].length, inputArray.red.length);
+
+      inputArray.red.forEach((row, y) => {
+        row.forEach((red, x) => {
+          const green = inputArray.green[y][x];
+          const blue = inputArray.blue[y][x];
+          const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
+          image.setPixelColor(pixelColor, x, y);
+        });
+      });
+      // Save the image as a JPEG file
+      image.write(`final_result.${formatOriginal}`, (err) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          resolve(`final_result.${formatOriginal}`);
+        }
       });
     });
-    // Save the image as a JPEG file
-    image.write(`final_result.${formatOriginal}`);
-    return `final_result.${formatOriginal}`;
   }
 
-  async getReadyToSend(name, formatSelected){
+  async getReadyToSend(name, formatSelected) {
     const outputFile = `final_result_front.${formatSelected}`;
     const binaryData = await fs.readFileSync(name);
 
@@ -64,7 +71,6 @@ class ImageLoader {
         console.error(err);
       });
   }
-
 }
 
 module.exports = ImageLoader;

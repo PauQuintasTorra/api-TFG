@@ -1,56 +1,73 @@
-const zlib = require('zlib');
+const AdmZip = require("adm-zip");
 
 const fs = require("fs");
+const { reject } = require("lodash");
+const { resolve } = require("path");
 
-class EntropyEncoder{
+class EntropyEncoder {
+  constructor() {}
 
-    constructor(){}
+  codificacioZlib(name) {
+    return new Promise((resolve, reject) => {
+      const imagePath = name;
+      const zipPath = "prova.zip";
 
-    async codificacioZlib(h, w){
-        const filename = 'final_result.jpg';
+      // Read the image data
+      const imageData = fs.readFileSync(imagePath);
 
-        // datos de imagen sin comprimir
-        const imageData = fs.readFileSync(filename);
-        console.log(imageData);
-        
-        // datos de imagen comprimidos
-        const compressedImageData = zlib.deflateSync(imageData);
-        
-        console.log('compressedData: ', compressedImageData);
-        // cantidad de bytes de la imagen sin comprimir
-        const uncompressedSize = imageData.length;
-        
-        // cantidad de bytes de la imagen comprimida
-        const compressedSize = compressedImageData.length;
-        
-        // ratio de compresión
-        const compressionRatio = uncompressedSize / compressedSize;
-        
-        // ancho y alto de la imagen
-        const width = w;
-        const height = h;
-        console.log(width, height);
-        // cantidad total de bits por píxel
-        const bitsPerPixel = 24;
-        
-        // cantidad total de bits por muestra
-        const bitsPerSample = bitsPerPixel / 3;
-        
-        // cantidad total de bits utilizados para representar la imagen sin comprimir
-        const uncompressedTotalBits = width * height * bitsPerPixel;
-        
-        // cantidad total de bits utilizados para representar la imagen comprimida
-        const compressedTotalBits = compressedSize * 8;
-        
-        // bits por muestra de la imagen
-        const bitsPerSampleUncompressed = uncompressedTotalBits / (width * height * 3);
-        const bitsPerSampleCompressed = compressedTotalBits / (width * height * 3);
-        
-        console.log(`Bits por muestra sin comprimir: ${bitsPerSampleUncompressed}`);
-        console.log(`Bits por muestra comprimido: ${bitsPerSampleCompressed}`);
-        console.log(`Ratio de compresión: ${compressionRatio}`);
+      // Create a new instance of AdmZip
+      const zip = new AdmZip();
+
+      // Add the compressed image data to the ZIP archive
+      zip.addFile(name, Buffer.from(imageData), "image data");
+
+      // Save the ZIP archive to disk
+      zip.writeZip(zipPath, (err) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          console.log("Image compressed and zipped successfully!");
+          resolve();
+        }
+      });
+    });
+  }
+
+  descodificacio() {
+    const zipPath = "prova.zip";
+
+    // Read the ZIP archive data
+    const zipData = fs.readFileSync(zipPath);
+
+    console.log("zipdata: ", zipData);
+    // Create a new instance of AdmZip using the ZIP archive data
+    const zip = new AdmZip(zipData);
+
+    // Get the entries/files in the ZIP archive
+    const entries = zip.getEntries();
+
+    // Assuming the ZIP archive contains only one file (the image file)
+    if (entries.length === 1) {
+      const imageEntry = entries[0];
+      // Get the uncompressed image data as a Buffer
+      const imageData = imageEntry.getData();
+
+      // Calculate the compression ratio
+      const compressedSize = imageEntry.header.compressedSize;
+      const uncompressedSize = imageEntry.header.uncompressedSize;
+      console.log(compressedSize, uncompressedSize);
+      const compressionRatio = (1 - compressedSize / uncompressedSize) * 100;
+
+      // Calculate the bits per sample
+      const bitsPerSample = imageData.length * 8;
+
+      console.log("Compression Ratio:", compressionRatio.toFixed(2) + "%");
+      console.log("Bits per Sample:", bitsPerSample);
+    } else {
+      console.log("Invalid ZIP archive. Expected one file.");
     }
-
+  }
 }
 
 module.exports = EntropyEncoder;
