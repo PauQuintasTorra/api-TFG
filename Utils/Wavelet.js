@@ -7,7 +7,7 @@ class Wavelet {
     this.SubbandSizeY = y;
     this.level = level;
   }
- 
+
   mainTransform(inputArray, formatImage) {
     const trans_inputArray = this.RHaar_transByLevelRGB(inputArray);
 
@@ -35,8 +35,10 @@ class Wavelet {
   }
 
   mainDestransform(inputArray, formatImage) {
-    this.SubbandSizeX = parseInt(inputArray.red[0].length / (2 ** this.level));
-    this.SubbandSizeY = parseInt(inputArray.red.length / (2 ** this.level));
+    this.SubbandSizeX = parseInt(
+      inputArray.red[0].length / 2 ** (this.level - 1)
+    );
+    this.SubbandSizeY = parseInt(inputArray.red.length / 2 ** (this.level - 1));
 
     const destrans_inputArray = this.RHaar_destransByLevelRGB(inputArray);
 
@@ -45,7 +47,10 @@ class Wavelet {
     const destrans_absBlue = this.trans_abs(destrans_inputArray.blue);
 
     // Create a new Jimp image with the same dimensions as the input array
-    const image = new Jimp(destrans_inputArray.red[0].length, destrans_inputArray.red.length);
+    const image = new Jimp(
+      destrans_inputArray.red[0].length,
+      destrans_inputArray.red.length
+    );
 
     // Iterate over the input arrays and set the color of each pixel in the image
     destrans_absRed.forEach((row, y) => {
@@ -63,7 +68,7 @@ class Wavelet {
 
   RHaar_forward(vector, r_c) {
     let size = 0;
-    if (r_c == 'r') {
+    if (r_c == "r") {
       size = parseInt(this.SubbandSizeX);
     } else {
       size = parseInt(this.SubbandSizeY);
@@ -83,7 +88,7 @@ class Wavelet {
 
   RHaar_inverse(vector_t, r_c) {
     let size = 0;
-    if (r_c == 'r') {
+    if (r_c == "r") {
       size = parseInt(this.SubbandSizeX);
     } else {
       size = parseInt(this.SubbandSizeY);
@@ -102,14 +107,14 @@ class Wavelet {
 
   RHaar_transform(matrix) {
     for (let i = 0; i < this.SubbandSizeY; i++) {
-      const aux = this.RHaar_forward(matrix[i], 'r');
-      for(let a = 0; a < aux.length; a++){
+      const aux = this.RHaar_forward(matrix[i], "r");
+      for (let a = 0; a < aux.length; a++) {
         matrix[i][a] = aux[a];
       }
     }
 
     for (let j = 0; j < this.SubbandSizeX; j++) {
-      const aux_j = this.RHaar_forward(this.extractColumn(matrix, j), 'c');
+      const aux_j = this.RHaar_forward(this.extractColumn(matrix, j), "c");
       for (let b = 0; b < aux_j.length; b++) {
         matrix[b][j] = aux_j[b];
       }
@@ -120,14 +125,14 @@ class Wavelet {
 
   RHaar_destransform(matrix) {
     for (let j = 0; j < this.SubbandSizeX; j++) {
-      const aux_j = this.RHaar_inverse(this.extractColumn(matrix, j), 'c');
+      const aux_j = this.RHaar_inverse(this.extractColumn(matrix, j), "c");
       for (let b = 0; b < aux_j.length; b++) {
         matrix[b][j] = aux_j[b];
       }
     }
 
     for (let i = 0; i < this.SubbandSizeY; i++) {
-      const aux = this.RHaar_inverse(matrix[i], 'r');
+      const aux = this.RHaar_inverse(matrix[i], "r");
       for (let a = 0; a < aux.length; a++) {
         matrix[i][a] = aux[a];
       }
@@ -158,8 +163,8 @@ class Wavelet {
     var m_red = this.RHaar_transform(inputArray.red);
     var m_green = this.RHaar_transform(inputArray.green);
     var m_blue = this.RHaar_transform(inputArray.blue);
-    if (this.level !== 0) {
-      for (let l = 0; l < this.level; l++) {
+    if (this.level !== 1) {
+      for (let l = 1; l < this.level; l++) {
         this.SubbandSizeX = parseInt(this.SubbandSizeX / 2);
         this.SubbandSizeY = parseInt(this.SubbandSizeY / 2);
         m_red = this.RHaar_transform(m_red);
@@ -195,8 +200,8 @@ class Wavelet {
     var m_red = this.RHaar_destransform(inputArray.red);
     var m_green = this.RHaar_destransform(inputArray.green);
     var m_blue = this.RHaar_destransform(inputArray.blue);
-    if (this.level !== 0) {
-      for (let l = 0; l < this.level; l++) {
+    if (this.level !== 1) {
+      for (let l = 1; l < this.level; l++) {
         this.SubbandSizeX = parseInt(this.SubbandSizeX * 2);
         this.SubbandSizeY = parseInt(this.SubbandSizeY * 2);
         m_red = this.RHaar_destransform(m_red);
@@ -207,16 +212,15 @@ class Wavelet {
     return { red: m_red, green: m_green, blue: m_blue };
   }
 
-
   trans_abs(matrix) {
     for (let x = 0; x < matrix[0].length; x++) {
       for (let y = 0; y < matrix.length; y++) {
         matrix[y][x] = parseInt(Math.abs(matrix[y][x]));
-        if(matrix[y][x] > 255) {
+        if (matrix[y][x] > 255) {
           matrix[y][x] = 255;
         } else {
           if (matrix[y][x] < -255) {
-            matrix[y][x] = -255
+            matrix[y][x] = -255;
           }
         }
       }
@@ -231,7 +235,7 @@ class Wavelet {
   getMaxMin(array) {
     let max = -Infinity;
     let min = Infinity;
-  
+
     for (let i = 0; i < array.length; i++) {
       for (let j = 0; j < array[i].length; j++) {
         if (array[i][j] > max) {

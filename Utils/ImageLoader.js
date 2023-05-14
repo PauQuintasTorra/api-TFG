@@ -2,6 +2,7 @@ const fs = require("fs");
 const sharp = require("sharp");
 const Jimp = require("jimp");
 const { reject } = require("lodash");
+const normalizeMatrix = require("./Utils");
 
 class ImageLoader {
   constructor() {}
@@ -33,10 +34,14 @@ class ImageLoader {
     return new Promise((resolve, reject) => {
       const image = new Jimp(inputArray.red[0].length, inputArray.red.length);
 
-      inputArray.red.forEach((row, y) => {
+      const final_red = normalizeMatrix(inputArray.red);
+      const final_green = normalizeMatrix(inputArray.green);
+      const final_blue = normalizeMatrix(inputArray.blue);
+
+      final_red.forEach((row, y) => {
         row.forEach((red, x) => {
-          const green = inputArray.green[y][x];
-          const blue = inputArray.blue[y][x];
+          const green = final_green[y][x];
+          const blue = final_blue[y][x];
           const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
           image.setPixelColor(pixelColor, x, y);
         });

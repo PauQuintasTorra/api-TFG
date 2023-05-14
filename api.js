@@ -136,8 +136,8 @@ app.post(
 app.post("/api/getFinalImage", async (req, res) => {
   const imatge = new ImageLoader();
 
-  const filePath = `final_result.jpg`;
-  const enviar = await imatge.getReadyToSend(filePath, "jpg");
+  const filePath = `final_result.jpeg`;
+  const enviar = await imatge.getReadyToSend(filePath, "jpeg");
 
   res.send(enviar);
 });
