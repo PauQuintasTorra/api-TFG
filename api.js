@@ -92,15 +92,16 @@ app.post(
     processLogger.timestamp =
       Date.now() + "-" + Math.round(Math.random() * 1000000);
     console.log(req.files["image"][0]);
+    const originalSizeImage = req.files["image"][0].size;
     const empty = new ManageFolders("./uploads");
     const imatge = new ImageLoader();
     const boxes = JSON.parse(req.body.boxes);
     const originalFormat = req.body.originalFormat;
     console.log(boxes);
     const im = new ManageImage(req.files["image"][0].path);
-    const height = im.getHeight();
-    const width = im.getWidth();
     const inputArray = await im.pathToArrayRGB();
+    const weight = inputArray.red[0].length;
+    const height = inputArray.red.length;
 
     const mainCreate = new LetsCreate(
       inputArray,
@@ -108,6 +109,8 @@ app.post(
       originalFormat,
       processLogger
     );
+
+    
     
     const entco = new EntropyEncoder();
 
@@ -115,7 +118,7 @@ app.post(
     imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then((name) => {
       const name_path = name;
       entco.codificacioZipCompress(name_path).then(() => {
-        entco.descodificacioZipCompress();
+        entco.descodificacioZipCompress(originalSizeImage, weight, height);
       });
     });
 
@@ -123,11 +126,12 @@ app.post(
 
     imatge.exportInputArray(final.image, `final_result.${originalFormat}`).then((name) => {
       const name_path = name;
-      entco.codificacioZipCompress(name_path).then(() => {
-        entco.descodificacioZipCompress();
-      });
+      // entco.codificacioZipCompress(name_path).then(() => {
+      //   entco.descodificacioZipCompress();
+      // });
     });
 
+    console.log("a veure: ", originalSizeImage, weight, height);
     const proces = final.process;
     console.log(proces);
 

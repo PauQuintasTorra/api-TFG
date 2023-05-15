@@ -1,4 +1,5 @@
 const AdmZip = require("adm-zip");
+const jimp = require("jimp");
 
 const fs = require("fs");
 const { reject } = require("lodash");
@@ -41,7 +42,7 @@ class EntropyEncoder {
     });
   }
 
-  descodificacioZipCompress() {
+  descodificacioZipCompress(originalSize, w, h) {
     const zipPath = "final_image_compress.zip";
 
     // Read the ZIP archive data
@@ -62,14 +63,27 @@ class EntropyEncoder {
 
       // Calculate the compression ratio
       const compressedSize = imageEntry.header.compressedSize;
-      const uncompressedSize = imageEntry.header.uncompressedSize;
-      console.log(compressedSize, uncompressedSize);
-      const compressionRatio = (1 - compressedSize / uncompressedSize) * 100;
+      const uncompressedSize = originalSize;
+      const compressionRatio = uncompressedSize / compressedSize;
 
       // Calculate the bits per sample
-      const bitsPerSample = imageData.length * 8;
+      const bitsPerSample = (compressedSize * 8) / (w * h * 3);
 
-      console.log("Compression Ratio:", compressionRatio.toFixed(2) + "%");
+      jimp.read('final_result_compress.jpg')
+      .then(image => {
+        // Get the image's format and color depth
+        const format = image.getMIME();
+        const bitsPerPixel = jimp.bpp[format];
+
+        // Calculate the bits per sample
+        const bitsPerSample = bitsPerPixel / image.getPixelCount();
+
+        console.log('Bits per Sample jimp:', bitsPerSample);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+      console.log("Compression Ratio:", compressionRatio.toFixed(2));
       console.log("Bits per Sample:", bitsPerSample);
     } else {
       console.log("Invalid ZIP archive. Expected one file.");
