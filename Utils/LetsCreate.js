@@ -10,7 +10,6 @@ class LetsCreate{
       this.originalFormat = originalFormat;
       this.boxes = boxes;
       this.image = image;
-      this.imageSend = image;
       this.imageOriginal = JSON.parse(JSON.stringify(this.image));
       this.processLogger = processLogger;
   }
@@ -75,11 +74,8 @@ class LetsCreate{
       }
     }
 
-    this.imageSend = JSON.parse(JSON.stringify(this.image));
-    this.abs_all(this.imageSend.red);
-    this.abs_all(this.imageSend.green);
-    this.abs_all(this.imageSend.blue);
-    return this.image;
+    const imageSend = JSON.parse(JSON.stringify(this.image));
+    return imageSend;
   }
 
   mainDecreate(){

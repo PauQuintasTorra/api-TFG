@@ -108,15 +108,23 @@ app.post(
       originalFormat,
       processLogger
     );
-    const arrayToSend = mainCreate.mainCreate();
+    
     const entco = new EntropyEncoder();
+
+    const arrayToSend = mainCreate.mainCreate();
+    imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then((name) => {
+      const name_path = name;
+      entco.codificacioZipCompress(name_path).then(() => {
+        entco.descodificacioZipCompress();
+      });
+    });
 
     const final = mainCreate.mainDecreate();
 
-    imatge.exportInputArray(final.image, originalFormat).then((name) => {
+    imatge.exportInputArray(final.image, `final_result.${originalFormat}`).then((name) => {
       const name_path = name;
-      entco.codificacioZlib(name_path).then(() => {
-        entco.descodificacio();
+      entco.codificacioZipCompress(name_path).then(() => {
+        entco.descodificacioZipCompress();
       });
     });
 

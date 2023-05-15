@@ -7,35 +7,42 @@ const { resolve } = require("path");
 class EntropyEncoder {
   constructor() {}
 
-  codificacioZlib(name) {
+  codificacioZipCompress(name) {
     return new Promise((resolve, reject) => {
       const imagePath = name;
-      const zipPath = "prova.zip";
-
-      // Read the image data
-      const imageData = fs.readFileSync(imagePath);
-
-      // Create a new instance of AdmZip
+      const zipPath = "final_image_compress.zip";
       const zip = new AdmZip();
 
-      // Add the compressed image data to the ZIP archive
-      zip.addFile(name, Buffer.from(imageData), "image data");
-
-      // Save the ZIP archive to disk
-      zip.writeZip(zipPath, (err) => {
-        if (err) {
+      fs.readFile(imagePath,(err, imageData)=>{
+        if(err) {
           console.log(err);
           reject(err);
-        } else {
-          console.log("Image compressed and zipped successfully!");
-          resolve();
+          return;
         }
+        
+        zip.addFile(name, imageData);
+        
+        try {
+          zip.writeZip(zipPath, (err) => {
+            if (err) {
+              console.log(err);
+              reject(err);
+            } else {
+              console.log("Image compressed and zipped successfully!");
+              resolve();
+            }
+          });
+        } catch (err) {
+          reject(err);
+        }
+        
       });
+      
     });
   }
 
-  descodificacio() {
-    const zipPath = "prova.zip";
+  descodificacioZipCompress() {
+    const zipPath = "final_image_compress.zip";
 
     // Read the ZIP archive data
     const zipData = fs.readFileSync(zipPath);
@@ -67,6 +74,10 @@ class EntropyEncoder {
     } else {
       console.log("Invalid ZIP archive. Expected one file.");
     }
+  }
+
+  returnerZipFinalImage(){
+
   }
 }
 

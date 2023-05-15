@@ -30,7 +30,7 @@ class ImageLoader {
       });
   }
 
-  async exportInputArray(inputArray, formatOriginal) {
+  async exportInputArray(inputArray, name) {
     return new Promise((resolve, reject) => {
       const image = new Jimp(inputArray.red[0].length, inputArray.red.length);
 
@@ -47,12 +47,12 @@ class ImageLoader {
         });
       });
       // Save the image as a JPEG file
-      image.write(`final_result.${formatOriginal}`, (err) => {
+      image.write(name, (err) => {
         if (err) {
           console.log(err);
           reject(err);
         } else {
-          resolve(`final_result.${formatOriginal}`);
+          resolve(name);
         }
       });
     });
