@@ -1,5 +1,6 @@
 const AdmZip = require("adm-zip");
 const jimp = require("jimp");
+const sharp = require('sharp');
 
 const fs = require("fs");
 const { reject } = require("lodash");
@@ -8,6 +9,7 @@ const { resolve } = require("path");
 class EntropyEncoder {
   constructor() {}
 
+  mainEntropyEncoder
   codificacioZipCompress(name) {
     return new Promise((resolve, reject) => {
       const imagePath = name;
@@ -42,7 +44,7 @@ class EntropyEncoder {
     });
   }
 
-  descodificacioZipCompress(originalSize, w, h) {
+  async descodificacioZipCompress(originalSize, w, h) {
     const zipPath = "final_image_compress.zip";
 
     // Read the ZIP archive data
@@ -64,12 +66,19 @@ class EntropyEncoder {
       // Calculate the compression ratio
       const compressedSize = imageEntry.header.compressedSize;
       const uncompressedSize = originalSize;
+      console.log(compressedSize, uncompressedSize);
+
       const compressionRatio = uncompressedSize / compressedSize;
 
       // Calculate the bits per sample
-      const bitsPerSample = (compressedSize * 8) / (w * h * 3);
+      const bitsPerSample = (compressedSize * 24) / (w * h * 3);
+      const bitsPerSampleOriginal = (uncompressedSize * 24) / (w * h * 3);
 
-      jimp.read('final_result_compress.jpg')
+      console.log("Compression Ratio:", compressionRatio.toFixed(2));
+      console.log("Bits per Sample:", bitsPerSample);
+      console.log("Bits per Sample Original:", bitsPerSampleOriginal);
+
+      await jimp.read('final_result_compress.jpg')
       .then(image => {
         // Get the image's format and color depth
         const format = image.getMIME();
@@ -83,8 +92,6 @@ class EntropyEncoder {
       .catch(error => {
         console.error('Error:', error);
       });
-      console.log("Compression Ratio:", compressionRatio.toFixed(2));
-      console.log("Bits per Sample:", bitsPerSample);
     } else {
       console.log("Invalid ZIP archive. Expected one file.");
     }

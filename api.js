@@ -11,7 +11,7 @@ const Statistics = require("./Utils/Statistics");
 const LetsCreate = require("./Utils/LetsCreate");
 const Quantizer = require("./Utils/Quantizer");
 const ArithmeticOperation = require("./Utils/ArithmeticOperation");
-const EntropyEncoder = require("./Utils/EntropyEncoder");
+const EntropyEncoder = require("./Utils/EntropyEncoder_2");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -108,17 +108,15 @@ app.post(
       boxes,
       originalFormat,
       processLogger
-    );
-
-    
+    );    
     
     const entco = new EntropyEncoder();
 
     const arrayToSend = mainCreate.mainCreate();
     imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then((name) => {
       const name_path = name;
-      entco.codificacioZipCompress(name_path).then(() => {
-        entco.descodificacioZipCompress(originalSizeImage, weight, height);
+      entco.main(arrayToSend).then(() => {
+        //entco.descodificacioZipCompress(originalSizeImage, weight, height);
       });
     });
 

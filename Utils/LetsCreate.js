@@ -1,4 +1,5 @@
 const ArithmeticOperation = require("./ArithmeticOperation");
+const EntropyEncoder = require("./EntropyEncoder");
 const Metrics = require("./Metrics");
 const Quantizer = require("./Quantizer");
 const Statistics = require("./Statistics");
@@ -62,6 +63,14 @@ class LetsCreate{
               this.image = arithmeticOperation.mainDivideValue(this.image, this.originalFormat);
               break;
           }
+          break;
+
+        case 'EntropyEncoder':
+          const entropyEncoder = new EntropyEncoder();
+          entropyEncoder.codificacioZipCompress()
+
+          break;
+        
         
       }
       this.processLogger.progress[i] = {
