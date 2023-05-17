@@ -9,7 +9,6 @@ const { resolve } = require("path");
 class EntropyEncoder {
   constructor() {}
 
-  mainEntropyEncoder
   codificacioZipCompress(name) {
     return new Promise((resolve, reject) => {
       const imagePath = name;

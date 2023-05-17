@@ -11,7 +11,7 @@ const Statistics = require("./Utils/Statistics");
 const LetsCreate = require("./Utils/LetsCreate");
 const Quantizer = require("./Utils/Quantizer");
 const ArithmeticOperation = require("./Utils/ArithmeticOperation");
-const EntropyEncoder = require("./Utils/EntropyEncoder_2");
+const LZEncoder = require("./Utils/LZEncoder");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -100,7 +100,7 @@ app.post(
     console.log(boxes);
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
-    const weight = inputArray.red[0].length;
+    const width = inputArray.red[0].length;
     const height = inputArray.red.length;
 
     const mainCreate = new LetsCreate(
@@ -110,36 +110,56 @@ app.post(
       processLogger
     );    
     
-    const entco = new EntropyEncoder();
+    const entco = new LZEncoder();
 
     const arrayToSend = mainCreate.mainCreate();
     imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then((name) => {
       const name_path = name;
-      entco.main(arrayToSend).then(() => {
+      entco.mainprova( width, height).then(() => {
         //entco.descodificacioZipCompress(originalSizeImage, weight, height);
+        const final = mainCreate.mainDecreate();
+
+        imatge.exportInputArray(final.image, `final_result.${originalFormat}`).then((name) => {
+          const name_path = name;
+          // entco.codificacioZipCompress(name_path).then(() => {
+          //   entco.descodificacioZipCompress();
+          // });
+        });
+
+        console.log("a veure: ", originalSizeImage, width, height);
+        const proces = final.process;
+        console.log(proces);
+
+        const data = JSON.stringify(proces);
+        fs.writeFile("data.json", data, (err) => {
+          if (err) throw err;
+        });
+
+        res.send(data);
+        empty.deleteAll();
       });
     });
 
-    const final = mainCreate.mainDecreate();
+    // const final = mainCreate.mainDecreate();
 
-    imatge.exportInputArray(final.image, `final_result.${originalFormat}`).then((name) => {
-      const name_path = name;
-      // entco.codificacioZipCompress(name_path).then(() => {
-      //   entco.descodificacioZipCompress();
-      // });
-    });
+    // imatge.exportInputArray(final.image, `final_result.${originalFormat}`).then((name) => {
+    //   const name_path = name;
+    //   // entco.codificacioZipCompress(name_path).then(() => {
+    //   //   entco.descodificacioZipCompress();
+    //   // });
+    // });
 
-    console.log("a veure: ", originalSizeImage, weight, height);
-    const proces = final.process;
-    console.log(proces);
+    // console.log("a veure: ", originalSizeImage, weight, height);
+    // const proces = final.process;
+    // console.log(proces);
 
-    const data = JSON.stringify(proces);
-    await fs.writeFile("data.json", data, (err) => {
-      if (err) throw err;
-    });
+    // const data = JSON.stringify(proces);
+    // await fs.writeFile("data.json", data, (err) => {
+    //   if (err) throw err;
+    // });
 
-    res.send(data);
-    empty.deleteAll();
+    // res.send(data);
+    // empty.deleteAll();
   }
 );
 
