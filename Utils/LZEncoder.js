@@ -31,9 +31,6 @@ class LZEncoder {
 
   }
   
-  returnerZipFinalImage(){
-
-  }
 }
 
 module.exports = LZEncoder;

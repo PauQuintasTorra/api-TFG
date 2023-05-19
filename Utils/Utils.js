@@ -13,10 +13,12 @@ function trans_abs(matrix){
 function normalizeMatrix(matrix){
     
     const max_matrix = math.max(math.flatten(matrix));
+    console.log(max_matrix)
     const min_matrix = math.min(math.flatten(matrix));
-    if (max_matrix <= 255 && min_matrix >= 0) {return matrix}
+    console.log(min_matrix)
+    if (max_matrix <= 255 && math.abs(min_matrix) <= 255 && min_matrix >= 0) {return matrix}
     else {
-        if(max_matrix <= 255 && min_matrix < 0){
+        if(max_matrix <= 255 && math.abs(min_matrix) <= 255 && min_matrix < 0){
             return trans_abs(matrix);
         }
         let matrix_abs = trans_abs(matrix);
@@ -28,6 +30,7 @@ function normalizeMatrix(matrix){
             }
         }
     
+        console.log("fins aqui")
         return matrix_abs;
     }
     
