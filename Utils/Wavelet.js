@@ -1,5 +1,4 @@
-const math = require("mathjs");
-const Jimp = require("jimp");
+const saveArrayIntoImage = require("./Utils");
 
 class Wavelet {
   constructor(x, y, level) {
@@ -11,27 +10,9 @@ class Wavelet {
   mainTransform(inputArray, formatImage) {
     const trans_inputArray = this.RHaar_transByLevelRGB(inputArray);
 
-    const returner = JSON.parse(JSON.stringify(trans_inputArray));
-
-    const trans_absRed = this.trans_abs(trans_inputArray.red);
-    const trans_absGreen = this.trans_abs(trans_inputArray.green);
-    const trans_absBlue = this.trans_abs(trans_inputArray.blue);
-
-    // Create a new Jimp image with the same dimensions as the input array
-    const image = new Jimp(trans_absRed[0].length, trans_absRed.length);
-
-    // Iterate over the input arrays and set the color of each pixel in the image
-    trans_absRed.forEach((row, y) => {
-      row.forEach((red, x) => {
-        const green = trans_absGreen[y][x];
-        const blue = trans_absBlue[y][x];
-        const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-        image.setPixelColor(pixelColor, x, y);
-      });
-    });
-    // Save the image as a JPEG file
-    image.write(`wavelet_Haar_${this.level}.${formatImage}`);
-    return returner;
+    saveArrayIntoImage(trans_inputArray.red, trans_inputArray.green, trans_inputArray.blue, `wavelet_Haar_${this.level}.${formatImage}`);
+    
+    return trans_inputArray;
   }
 
   mainDestransform(inputArray, formatImage) {
@@ -42,27 +23,8 @@ class Wavelet {
 
     const destrans_inputArray = this.RHaar_destransByLevelRGB(inputArray);
 
-    const destrans_absRed = this.trans_abs(destrans_inputArray.red);
-    const destrans_absGreen = this.trans_abs(destrans_inputArray.green);
-    const destrans_absBlue = this.trans_abs(destrans_inputArray.blue);
-
-    // Create a new Jimp image with the same dimensions as the input array
-    const image = new Jimp(
-      destrans_inputArray.red[0].length,
-      destrans_inputArray.red.length
-    );
-
-    // Iterate over the input arrays and set the color of each pixel in the image
-    destrans_absRed.forEach((row, y) => {
-      row.forEach((red, x) => {
-        const green = destrans_absGreen[y][x];
-        const blue = destrans_absBlue[y][x];
-        const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-        image.setPixelColor(pixelColor, x, y);
-      });
-    });
-    // Save the image as a JPEG file
-    image.write(`reverse_wavelet_Haar_${this.level}.${formatImage}`);
+    saveArrayIntoImage(destrans_inputArray.red, destrans_inputArray.green, destrans_inputArray.blue, `reverse_wavelet_Haar_${this.level}.${formatImage}`);
+    
     return destrans_inputArray;
   }
 

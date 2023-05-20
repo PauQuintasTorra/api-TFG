@@ -140,34 +140,26 @@ app.post(
       });
     });
 
-    // const final = mainCreate.mainDecreate();
-
-    // imatge.exportInputArray(final.image, `final_result.${originalFormat}`).then((name) => {
-    //   const name_path = name;
-    //   // entco.codificacioZipCompress(name_path).then(() => {
-    //   //   entco.descodificacioZipCompress();
-    //   // });
-    // });
-
-    // console.log("a veure: ", originalSizeImage, weight, height);
-    // const proces = final.process;
-    // console.log(proces);
-
-    // const data = JSON.stringify(proces);
-    // await fs.writeFile("data.json", data, (err) => {
-    //   if (err) throw err;
-    // });
-
-    // res.send(data);
-    // empty.deleteAll();
   }
 );
 
-app.post("/api/getFinalImage", async (req, res) => {
+app.post("/api/getFinalImage", upload.fields([{ name: "originalFormat" }]),async (req, res) => {
   const imatge = new ImageLoader();
+  const format = req.body.originalFormat;
 
-  const filePath = `final_result.jpeg`;
-  const enviar = await imatge.getReadyToSend(filePath, "jpeg");
+  const filePath = `final_result`;
+  const enviar = await imatge.getReadyToSend(filePath, format);
+
+  res.send(enviar);
+});
+
+app.post("/api/getImageCustom", upload.fields([{ name: "originalFormat" }, { name: "name" }]), async (req, res) => {
+  
+  const imatge = new ImageLoader();
+  const format = req.body.originalFormat;
+  const filePath = req.body.name;
+
+  const enviar = await imatge.getReadyToSend(filePath, format);
 
   res.send(enviar);
 });

@@ -3,6 +3,7 @@ const sharp = require("sharp");
 const Jimp = require("jimp");
 const { reject } = require("lodash");
 const normalizeMatrix = require("./Utils");
+const saveArrayIntoImage = require("./Utils");
 
 class ImageLoader {
   constructor() {}
@@ -32,35 +33,17 @@ class ImageLoader {
 
   async exportInputArray(inputArray, name) {
     return new Promise((resolve, reject) => {
-      const image = new Jimp(inputArray.red[0].length, inputArray.red.length);
-
-      const final_red = normalizeMatrix(inputArray.red);
-      const final_green = normalizeMatrix(inputArray.green);
-      const final_blue = normalizeMatrix(inputArray.blue);
-
-      final_red.forEach((row, y) => {
-        row.forEach((red, x) => {
-          const green = final_green[y][x];
-          const blue = final_blue[y][x];
-          const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-          image.setPixelColor(pixelColor, x, y);
-        });
-      });
-      // Save the image as a JPEG file
-      image.write(name, (err) => {
-        if (err) {
-          console.log(err);
-          reject(err);
-        } else {
-          resolve(name);
-        }
-      });
+      saveArrayIntoImage(inputArray.red, inputArray.green, inputArray.blue, name);
+      resolve()
     });
   }
 
   async getReadyToSend(name, formatSelected) {
-    const outputFile = `final_result_front.${formatSelected}`;
-    const binaryData = await fs.readFileSync(name);
+    let outputFile = `send_${name}.${formatSelected}`;
+    if(name == `final_result.${formatSelected}`) {
+      outputFile = `send_${name}.${formatSelected}`;
+    }
+    const binaryData = await fs.readFileSync(`${name}.${formatSelected}`);
 
     return sharp(binaryData)
       .toFormat(formatSelected)

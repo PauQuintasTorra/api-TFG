@@ -1,5 +1,4 @@
-const math = require("mathjs");
-const Jimp = require("jimp");
+const saveArrayIntoImage = require("./Utils");
 
 class ArithmeticOperation{
     constructor(value){ 
@@ -12,21 +11,9 @@ class ArithmeticOperation{
         const add_red = this.addValue(inputArray.red);
         const add_green = this.addValue(inputArray.green);
         const add_blue = this.addValue(inputArray.blue);
-        
-        // Create a new Jimp image with the same dimensions as the input array
-        const image = new Jimp(add_red[0].length, add_red.length);
-    
-        // Iterate over the input arrays and set the color of each pixel in the image
-        add_red.forEach((row, y) => {
-          row.forEach((red, x) => {
-            const green = add_green[y][x];
-            const blue = add_blue[y][x];
-            const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-            image.setPixelColor(pixelColor, x, y);
-          });
-        });
-        // Save the image as a JPEG file
-        image.write(`add_${this.value}.${formatImage}`);
+
+        saveArrayIntoImage(add_red, add_green, add_blue, `Add_${this.value}.${formatImage}`);
+       
         return {red: add_red, green: add_green, blue: add_blue};
     }
 
@@ -48,20 +35,8 @@ class ArithmeticOperation{
         const sub_green = this.substractValue(inputArray.green);
         const sub_blue = this.substractValue(inputArray.blue);
         
-        // Create a new Jimp image with the same dimensions as the input array
-        const image = new Jimp(sub_red[0].length, sub_red.length);
-    
-        // Iterate over the input arrays and set the color of each pixel in the image
-        sub_red.forEach((row, y) => {
-          row.forEach((red, x) => {
-            const green = sub_green[y][x];
-            const blue = sub_blue[y][x];
-            const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-            image.setPixelColor(pixelColor, x, y);
-          });
-        });
-        // Save the image as a JPEG file
-        image.write(`substract_${this.value}.${formatImage}`);
+        saveArrayIntoImage(sub_red, sub_green, sub_blue, `Sub_${this.value}.${formatImage}`);
+        
         return {red: sub_red, green: sub_green, blue: sub_blue};
     }
 
@@ -83,20 +58,8 @@ class ArithmeticOperation{
         const mul_green = this.multiplyValue(inputArray.green);
         const mul_blue = this.multiplyValue(inputArray.blue);
         
-        // Create a new Jimp image with the same dimensions as the input array
-        const image = new Jimp(mul_red[0].length, mul_red.length);
-    
-        // Iterate over the input arrays and set the color of each pixel in the image
-        mul_red.forEach((row, y) => {
-          row.forEach((red, x) => {
-            const green = mul_green[y][x];
-            const blue = mul_blue[y][x];
-            const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-            image.setPixelColor(pixelColor, x, y);
-          });
-        });
-        // Save the image as a JPEG file
-        image.write(`multiply_${this.value}.${formatImage}`);
+        saveArrayIntoImage(mul_red, mul_green, mul_blue, `Mult_${this.value}.${formatImage}`);
+        
         return {red: mul_red, green: mul_green, blue: mul_blue};
     }
 
@@ -118,20 +81,8 @@ class ArithmeticOperation{
         const div_green = this.divideValue(inputArray.green);
         const div_blue = this.divideValue(inputArray.blue);
         
-        // Create a new Jimp image with the same dimensions as the input array
-        const image = new Jimp(div_red[0].length, div_red.length);
-    
-        // Iterate over the input arrays and set the color of each pixel in the image
-        div_red.forEach((row, y) => {
-          row.forEach((red, x) => {
-            const green = div_green[y][x];
-            const blue = div_blue[y][x];
-            const pixelColor = Jimp.rgbaToInt(red, green, blue, 255);
-            image.setPixelColor(pixelColor, x, y);
-          });
-        });
-        // Save the image as a JPEG file
-        image.write(`divide_${this.value}.${formatImage}`);
+        saveArrayIntoImage(div_red, div_green, div_blue, `Div_${this.value}.${formatImage}`);
+        
         return {red: div_red, green: div_green, blue: div_blue};
     }
 
