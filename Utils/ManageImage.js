@@ -1,6 +1,7 @@
 const fs = require("fs");
 const Jimp = require("jimp");
 const { reject } = require("lodash");
+const saveArrayIntoImage = require("./Utils");
 
 class ManageImage {
   constructor(path) {
@@ -41,8 +42,11 @@ class ManageImage {
             blueChannel[y][x] = b;
           }
         }
-
-        resolve({ red: redChannel, green: greenChannel, blue: blueChannel });
+        
+        saveArrayIntoImage(redChannel, greenChannel, blueChannel, `imatge_original.jpg`).then((name)=>{
+          resolve({ red: redChannel, green: greenChannel, blue: blueChannel });
+        });
+        
       });
     });
   }

@@ -29,51 +29,53 @@ app.post(
     const inputArray = await im.pathToArrayRGB();
     const aa = JSON.parse(JSON.stringify(inputArray));
     const provaAr = JSON.parse(JSON.stringify(inputArray));
-    const height = im.getHeight();
-    const width = im.getWidth();
+    const height = await im.getHeight();
+    const width = await im.getWidth();
 
     const formatSelected = req.body["formatSelected"];
 
-    console.log(req.files["image"][0].path);
     const imatge = new ImageLoader(req.files["image"][0].path);
     const formatImage = im.extractFormat(req.files["image"][0].originalname);
-    const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
+    // const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
+
+    const lzEncoder = new LZEncoder();
+    lzEncoder.mainprova('imatge_original.jpg', inputArray.red[0].length, inputArray.red.length);
 
     // ARITHMETIC OPERATION
-    const sumar = new ArithmeticOperation(5);
-    const suma_feta = sumar.mainDivideValue(provaAr, formatImage);
+    // const sumar = new ArithmeticOperation(5);
+    // const suma_feta = sumar.mainDivideValue(provaAr, formatImage);
 
     // WAVELET
-    const wavelet = new Wavelet(width, height, 2);
-    const rrr = wavelet.mainTransform(inputArray, formatImage);
-    const ddd = wavelet.mainDestransform(rrr, formatImage);
+    // const wavelet = new Wavelet(width, height, 2);
+    // const rrr = wavelet.mainTransform(inputArray, formatImage);
+    // const ddd = wavelet.mainDestransform(rrr, formatImage);
 
     // STATISTICS
-    const statistics_original = new Statistics();
-    // console.log("Mitja de la imatge", statistics_original.getVarianze(ddd));
-    console.log(
-      "Mitja de la imatge",
-      statistics_original.getEntropyOrderZeroRGB(aa)
-    );
-    console.log(statistics_original.getEntropyOrderZero(aa.red));
-    console.log(statistics_original.getEntropyOrderZero(aa.green));
-    console.log(statistics_original.getEntropyOrderZero(aa.blue));
+    // const statistics_original = new Statistics();
+    // // console.log("Mitja de la imatge", statistics_original.getVarianze(ddd));
+    // console.log(
+    //   "Mitja de la imatge",
+    //   statistics_original.getEntropyOrderZeroRGB(aa)
+    // );
+    // console.log(statistics_original.getEntropyOrderZero(aa.red));
+    // console.log(statistics_original.getEntropyOrderZero(aa.green));
+    // console.log(statistics_original.getEntropyOrderZero(aa.blue));
     // const entropyRed_original = new Statistics(aa.red);
     // console.log("Entropia red", entropyRed_original.getEntropyOrderZero());
     // console.log("Entropia wave", entropyRed_wavelet.getEntropyOrderZero());
 
     // QUANTITZADOR
-    const quantizer = new Quantizer(6);
-    const a = quantizer.mainQuantize(aa, formatImage);
-    //const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
-    const b = quantizer.mainDequantize(a, formatImage);
-    console.log(
-      "Mitja de la imatge",
-      statistics_original.getEntropyOrderZeroRGB(b)
-    );
+    // const quantizer = new Quantizer(6);
+    // const a = quantizer.mainQuantize(aa, formatImage);
+    // //const enviar = await imatge.exportInputArray(a,formatImage, formatSelected)
+    // const b = quantizer.mainDequantize(a, formatImage);
+    // console.log(
+    //   "Mitja de la imatge",
+    //   statistics_original.getEntropyOrderZeroRGB(b)
+    // );
 
-    const name_path = await imatge.exportInputArray(b, formatImage);
-    const enviar = await imatge.getReadyToSend(name_path, formatSelected);
+    // const name_path = await imatge.exportInputArray(b, formatImage);
+    const enviar = await imatge.getReadyToSend('imatge_original', formatImage);
     res.send(enviar);
     empty.deleteAll();
   }
@@ -91,7 +93,6 @@ app.post(
     processLogger.nameImage = req.files["image"][0].originalname;
     processLogger.timestamp =
       Date.now() + "-" + Math.round(Math.random() * 1000000);
-    console.log(req.files["image"][0]);
     const originalSizeImage = req.files["image"][0].size;
     const empty = new ManageFolders("./uploads");
     const imatge = new ImageLoader();
@@ -110,11 +111,11 @@ app.post(
       processLogger
     );    
     
-    const entco = new LZEncoder();
+    const lzEncoder = new LZEncoder();
 
     const arrayToSend = mainCreate.mainCreate();
     imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then((name) => {
-      entco.mainprova(name, width, height).then(() => {
+      lzEncoder.mainprova(name, width, height).then(() => {
         //entco.descodificacioZipCompress(originalSizeImage, weight, height);
         const final = mainCreate.mainDecreate();
 
@@ -125,15 +126,20 @@ app.post(
           // });
         });
 
-        console.log("a veure: ", originalSizeImage, width, height);
         const proces = final.process;
         console.log(proces);
 
-        const data = JSON.stringify(proces);
-        fs.writeFile("data.json", data, (err) => {
-          if (err) throw err;
-        });
-
+        const filePath = 'data.json';
+        const data = JSON.stringify(proces, null, 2);
+        if (fs.existsSync(filePath)) {
+          const fileContent = fs.readFileSync(filePath, 'utf-8');
+          const existingData = JSON.parse(fileContent);
+          existingData.push(proces);
+          const updatedContent = JSON.stringify(existingData, null, 2);
+          fs.writeFileSync(filePath, updatedContent);
+        } else {
+          fs.writeFileSync(filePath, `[${data}]`);
+        }
         res.send(data);
         empty.deleteAll();
       });
@@ -158,6 +164,16 @@ app.post("/api/getImageCustom", upload.fields([{ name: "originalFormat" }, { nam
   const format = req.body.originalFormat;
   const filePath = req.body.name;
 
+  const enviar = await imatge.getReadyToSend(filePath, format);
+
+  res.send(enviar);
+});
+
+app.post("/api/downloadDataFromJson", upload.fields([{ name: "formatToDownload" }]),async (req, res) => {
+  const imatge = new ImageLoader();
+  const format = req.body.originalFormat;
+
+  const filePath = `final_result`;
   const enviar = await imatge.getReadyToSend(filePath, format);
 
   res.send(enviar);

@@ -1,19 +1,21 @@
-const lzjs = require('lzjs');
+
 const fs = require('fs');
 
-class LZEncoder {
+class Huffman {
   constructor() {}
 
   async mainprova(name, w, h){
     const imageData = fs.readFileSync(name);
 
-    const compressed = lzjs.compressToBase64(imageData);
-    const decoded = lzjs.decompressFromBase64(compressed);
+    const buffer = new TextEncoder().encode(imageData);
 
-    const originalSize = fs.statSync(name).size;
+    const compressed = huffy.compress(buffer);
+    const decoded = huffy.decompress(compressed);
+
+    // const originalSize = fs.statSync(name).size;
     const encodedSize = compressed.length;
     const decodedSize = decoded.length;
-    const compressionRatio = originalSize / encodedSize;
+    const compressionRatio = compressed.length / buffer.length
 
     const width = w;
     const height = h;
@@ -29,4 +31,4 @@ class LZEncoder {
   }
 }
 
-module.exports = LZEncoder;
+module.exports = Huffman;
