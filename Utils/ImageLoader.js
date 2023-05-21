@@ -33,8 +33,9 @@ class ImageLoader {
 
   async exportInputArray(inputArray, name) {
     return new Promise((resolve, reject) => {
-      saveArrayIntoImage(inputArray.red, inputArray.green, inputArray.blue, name);
-      resolve()
+      saveArrayIntoImage(inputArray.red, inputArray.green, inputArray.blue, name).then((name)=>{
+        resolve(name);
+      });
     });
   }
 

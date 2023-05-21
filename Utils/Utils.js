@@ -33,34 +33,39 @@ function normalizeMatrix(matrix){
     }
 }
 
-function saveArrayIntoImage(redArray, greenArray, blueArray, nameFile ){
-    const returner = JSON.parse(
-        JSON.stringify({
-          red: redArray,
-          green: greenArray,
-          blue: blueArray,
-        })
-    );
-  
-    const red_ = normalizeMatrix(returner.red);
-    const green_ = normalizeMatrix(returner.green);
-    const blue_ = normalizeMatrix(returner.blue);
-
-    const image = new Jimp(redArray[0].length, redArray.length);
-    red_.forEach((row, y) => {
-        row.forEach((red, x) => {
-        const green = green_[y][x];
-        const blue = blue_[y][x];
-        const pixelColor = Jimp.rgbaToInt(
-            red,
-            green,
-            blue,
-            255
+async function saveArrayIntoImage(redArray, greenArray, blueArray, nameFile ){
+    return new Promise((resolve, reject)=>{
+        const returner = JSON.parse(
+            JSON.stringify({
+              red: redArray,
+              green: greenArray,
+              blue: blueArray,
+            })
         );
-        image.setPixelColor(pixelColor, x, y);
+      
+        const red_ = normalizeMatrix(returner.red);
+        const green_ = normalizeMatrix(returner.green);
+        const blue_ = normalizeMatrix(returner.blue);
+    
+        const image = new Jimp(redArray[0].length, redArray.length);
+        red_.forEach((row, y) => {
+            row.forEach((red, x) => {
+            const green = green_[y][x];
+            const blue = blue_[y][x];
+            const pixelColor = Jimp.rgbaToInt(
+                red,
+                green,
+                blue,
+                255
+            );
+            image.setPixelColor(pixelColor, x, y);
+            });
         });
-    });
-    image.write(nameFile);
+        image.write(nameFile, (err)=>{
+            if(err) {reject(err)}
+            resolve(nameFile);
+        });
+    })
 }
 
 

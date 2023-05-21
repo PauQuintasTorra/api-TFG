@@ -114,8 +114,7 @@ app.post(
 
     const arrayToSend = mainCreate.mainCreate();
     imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then((name) => {
-      const name_path = name;
-      entco.mainprova( width, height).then(() => {
+      entco.mainprova(name, width, height).then(() => {
         //entco.descodificacioZipCompress(originalSizeImage, weight, height);
         const final = mainCreate.mainDecreate();
 

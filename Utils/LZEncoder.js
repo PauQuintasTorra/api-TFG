@@ -4,14 +4,13 @@ const fs = require('fs');
 class LZEncoder {
   constructor() {}
 
-  async mainprova(w,h){
-    const imagePath = 'final_result_compress.jpg';
-    const imageData = fs.readFileSync(imagePath);
+  async mainprova(name, w, h){
+    const imageData = fs.readFileSync(name);
 
     const compressed = lzjs.compressToBase64(imageData);
     const decoded = lzjs.decompressFromBase64(compressed);
 
-    const originalSize = fs.statSync(imagePath).size;
+    const originalSize = fs.statSync(name).size;
     const encodedSize = compressed.length;
     const decodedSize = decoded.length;
     const compressionRatio = originalSize / encodedSize;
