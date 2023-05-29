@@ -4,29 +4,58 @@ const fs = require('fs');
 class LZEncoder {
   constructor() {}
 
-  async mainprova(name, w, h){
-    const imageData = fs.readFileSync(name);
+  async mainprova(originalInputArray, inputArray){
+    const originalRed = originalInputArray.red;
+    const originalGreen = originalInputArray.green;
+    const originalBlue = originalInputArray.blue;
 
-    const compressed = lzjs.compressToBase64(imageData);
+    const Red = inputArray.red;
+    const Green = inputArray.green;
+    const Blue = inputArray.blue;
+
+    const dataOriginal = JSON.stringify({originalRed, originalGreen, originalBlue})
+    const dataToCompress = JSON.stringify({Red, Green, Blue})
+    const compressed = lzjs.compressToBase64(dataToCompress);
     const decoded = lzjs.decompressFromBase64(compressed);
+    const decodeSize = decoded.length;
 
-    const originalSize = fs.statSync(name).size;
+    const height = Red.length;
+    const width = Red[0].length;
+
+    const originalStats = this.calculateBitsPixels(height, width, originalInputArray);
+    const {bits, pixels} = this.calculateBitsPixels(height, width, inputArray);
+
+    const bitsPerSampleOriginal = originalStats.bits / originalStats.pixels;
+    const bitsPerSample = bits / pixels;
     const encodedSize = compressed.length;
-    const decodedSize = decoded.length;
-    const compressionRatio = originalSize / encodedSize;
-
-    const width = w;
-    const height = h;
-    const totalPixels = width * height * 3;
-    const totalBits = encodedSize * 24;
-    const totalBitsOriginal = decodedSize * 24;
-    const bitsPerSample = totalBits / totalPixels;
-    const bitsPerSampleOriginal = totalBitsOriginal / totalPixels;
+    const compressionRatio = dataOriginal.length / encodedSize;
 
     console.log('Compression Ratio:', compressionRatio.toFixed(2));
     console.log('Bits per Sample:', bitsPerSample.toFixed(2));
     console.log('Bits per Sample Original:', bitsPerSampleOriginal.toFixed(2));
   }
+
+  calculateBitsPixels(height, width, inputArray){
+    const array = JSON.parse(JSON.stringify(inputArray));
+    
+    let totalBits = 0;
+    let totalPixels = 0;
+
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+
+        const redBinary = array.red[i][j].toString(2);
+        const greenBinary = array.green[i][j].toString(2);
+        const blueBinary = array.blue[i][j].toString(2);
+
+        totalBits += redBinary.length + greenBinary.length + blueBinary.length;
+        totalPixels++;
+      }
+    }
+
+    return {bits: totalBits, pixels: totalPixels};
+  }
+
 }
 
 module.exports = LZEncoder;

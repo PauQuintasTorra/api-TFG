@@ -31,6 +31,7 @@ app.post(
     const provaAr = JSON.parse(JSON.stringify(inputArray));
     const height = await im.getHeight();
     const width = await im.getWidth();
+    const size = req.files["image"][0].size;
 
     const formatSelected = req.body["formatSelected"];
 
@@ -39,7 +40,7 @@ app.post(
     // const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
 
     const lzEncoder = new LZEncoder();
-    lzEncoder.mainprova('imatge_original.jpg', inputArray.red[0].length, inputArray.red.length);
+    lzEncoder.mainprova(inputArray, aa);
 
     // ARITHMETIC OPERATION
     // const sumar = new ArithmeticOperation(5);
@@ -101,6 +102,7 @@ app.post(
     console.log(boxes);
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
+    const deepcopyInputArray = JSON.parse(JSON.stringify(inputArray));
     const width = inputArray.red[0].length;
     const height = inputArray.red.length;
 
@@ -115,7 +117,7 @@ app.post(
 
     const arrayToSend = mainCreate.mainCreate();
     imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then((name) => {
-      lzEncoder.mainprova(name, width, height).then(() => {
+      lzEncoder.mainprova(deepcopyInputArray, arrayToSend).then(() => {
         //entco.descodificacioZipCompress(originalSizeImage, weight, height);
         const final = mainCreate.mainDecreate();
 
