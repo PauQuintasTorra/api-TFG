@@ -1,1 +1,84 @@
-{"nameImage":"15db0237-0694-41dd-960e-97db38c55c68.jpg","timestamp":"1682960349470-595768","progress":[{"class":{"type":"Quantizer","q_step":2},"max":127,"min":0,"entropy":5.268649967844386,"varianze":1157.7173959023123,"mean":48.94632127549912},{"class":{"type":"Wavelet","waveletType":"Haar","waveletLevel":2},"max":129,"min":-121,"entropy":3.975797369646555,"varianze":142.05176536764887,"mean":0.6634394327799479}],"finalStats":{"psnr":51.122938236794646,"pae":1,"mse":0.5021074083116319}}
+[
+  {
+    "nameImage": "SampleGIFImage_350kbmb.jpg",
+    "timestamp": "1685390107406-47430",
+    "progress": [
+      {
+        "class": {
+          "type": "Wavelet",
+          "waveletType": "Haar",
+          "waveletLevel": 2
+        },
+        "max": 259,
+        "min": -198,
+        "entropy": 4.869724045912037,
+        "varianze": 1167.1493737383769,
+        "mean": 6.025373246934678
+      },
+      {
+        "class": {
+          "type": "Quantizer",
+          "q_step": 3
+        },
+        "max": 86,
+        "min": -66,
+        "entropy": 3.556819692148666,
+        "varianze": 126.16352557600715,
+        "mean": 1.9934026930067275
+      }
+    ],
+    "initStats": {
+      "max": 255,
+      "min": 0,
+      "entropy": 6.013217774294696,
+      "varianze": 4628.615046195683,
+      "mean": 98.75785234239366
+    },
+    "finalStats": {
+      "psnr": 42.08466005534384,
+      "pae": 8,
+      "mse": 4.023623572455512
+    }
+  },
+  {
+    "nameImage": "15db0237-0694-41dd-960e-97db38c55c68.jpg",
+    "timestamp": "1685390153170-87327",
+    "progress": [
+      {
+        "class": {
+          "type": "Wavelet",
+          "waveletType": "Haar",
+          "waveletLevel": 2
+        },
+        "max": 261,
+        "min": -199,
+        "entropy": 4.855619668047587,
+        "varianze": 1163.6600397194118,
+        "mean": 6.008817460801867
+      },
+      {
+        "class": {
+          "type": "Quantizer",
+          "q_step": 3
+        },
+        "max": 87,
+        "min": -66,
+        "entropy": 3.548575764531616,
+        "varianze": 125.78061599297344,
+        "mean": 1.9877022637261286
+      }
+    ],
+    "initStats": {
+      "max": 255,
+      "min": 0,
+      "entropy": 6.012346233859003,
+      "varianze": 4632.056602268817,
+      "mean": 98.39474995930989
+    },
+    "finalStats": {
+      "psnr": 42.10459452313324,
+      "pae": 8,
+      "mse": 4.005196889241536
+    }
+  }
+]
