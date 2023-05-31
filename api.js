@@ -177,6 +177,23 @@ app.post("/api/downloadDataFromJson", upload.fields([{ name: "formatToDownload" 
   });
 });
 
+app.post("/api/deleteJSON",async (req, res) => {
+  const filePath = 'data.json';
+
+  fs.unlink(filePath, ()=>{
+    console.log("Deleted correctly!");
+  })
+
+});
+
+app.post("/api/isEmptyJSON",async (req, res) => {
+  const filePath = 'data.json';
+
+  res.send( {exists: fs.existsSync(filePath)});
+
+});
+
+
 app.post("/api/downloadImageURL", async (req, res) => {
   console.log(req);
   const format = req.query.format;
