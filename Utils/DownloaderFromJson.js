@@ -1,5 +1,5 @@
 const fs = require("fs");
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const { Parser } = require('json2csv');
 const XLSX = require('xlsx');
 
 class DownloaderFromJson {
@@ -7,8 +7,8 @@ class DownloaderFromJson {
 
   async mainDownloader(format, filePath) {
 
-    const jsonData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    //console.log(jsonData);
+    const jsonData = JSON.parse(fs.readFileSync('data.json', 'utf-8'));
+
     switch (format) {
       case 'xlsx':
         function flattenObject(obj, headers = {}, prefix = '') {
@@ -19,8 +19,6 @@ class DownloaderFromJson {
               const nestedObj = flattenObject(obj[key], headers, `${prefix}${key}.`);
               Object.assign(flattened, nestedObj);
             } else {
-                console.log(`PREFIX: ${prefix}`);
-                console.log(`CLAU: ${key}`)
                 flattened[`${prefix}${key}`] = obj[key];
                 switch (`${key}`) {
                   case 'nameImage':
@@ -119,57 +117,28 @@ class DownloaderFromJson {
         const excelData = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
         
         // Save Excel file
-        fs.writeFileSync('output.xlsx', excelData);
-        
-        console.log('Excel file created successfully!');
+        fs.writeFile(filePath, excelData, ()=>{
+          console.log('Excel file created successfully!');
+        });
+        return excelData;
         break;
 
       case 'csv':
-        const csvWriter = createCsvWriter({
-          path: 'data.csv',
-          header: [
-            {id: 'nameImage', title: 'Nom del fitxer'},
-            {id: 'timestamp', title: 'Identificador'},
-            {id: 'progress', title: 'Procés'},
-            {id: 'initStats', title: 'Estadístiques inicials'},
-            {id: 'entropyStats', title: "Estadístiques sobre l'entropia"},
-            {id: 'finalStats', title: 'Estadístiques finals'},
-            {id: 'progress.class.type', title: 'Tipus de classe'},
-            {id: 'progress.class.waveletType', title: 'Tipus de transformada Wavelet'},
-            {id: 'progress.class.waveletLevel', title: 'Nivell de transformada Wavelet'},
-            {id: 'progress.max', title: 'Màxim'},
-            {id: 'progress.min', title: 'Mínim'},
-            {id: 'progress.entropy', title: 'Entropia'},
-            {id: 'progress.varianze', title: 'Variança'},
-            {id: 'progress.mean', title: 'Mitjana'},
-            {id: 'progress.class.q_step', title: 'Pas de quantització'},
-            {id: 'initStats.max', title: 'Màxim'},
-            {id: 'initStats.min', title: 'Mínim'},
-            {id: 'initStats.entropy', title: 'Entropia'},
-            {id: 'initStats.varianze', title: 'Variança'},
-            {id: 'initStats.mean', title: 'Mitjana'},
-            {id: 'progress.class.encoderType', title: 'Tipus de codificador per entropia'},
-            {id: 'entropyStats.compressionRatio', title: 'Ratio de compressió'},
-            {id: 'entropyStats.bitsPerSample', title: 'Bits per mostra (imatge comprimida)'},
-            {id: 'entropyStats.bitsPerSampleOriginal', title: 'Bits per mostra (imatge original)'},
-            {id: 'entropyStats.finalBitsPerSample', title: 'Bits per mostra (imatge modificada)'},
-            {id: 'finalStats.psnr', title: '"Peak Signal to Noise Ratio"'},
-            {id: 'finalStats.pae', title: '"Peak Absolute Erorr"'},
-            {id: 'finalStats.mse', title: '"Mean Square Error"'},
-            {id: 'progress.class.operationType', title: "Tipus d'operació"},
-            {id: 'progress.class.operationNumber', title: 'Valor a operar'},
-          ],
+        const json2csvParser = new Parser();
+        const csvData = json2csvParser.parse(jsonData);
+
+        // Write CSV data to a file
+        fs.writeFile(filePath, csvData, ()=>{
+          console.log("IT WORKS!");
         });
-        csvWriter.writeRecords(data).then(()=>{
-          console.log("IT WORKS!")
-        });
+        return csvData;
         break;
 
       case 'json':
+        return jsonData;
         break;
 
     }
-
 
   }
 

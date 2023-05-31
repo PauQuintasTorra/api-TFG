@@ -168,12 +168,12 @@ app.post("/api/downloadDataFromJson", upload.fields([{ name: "formatToDownload" 
   const downloader = new DownloaderFromJson();
   const format = req.body.formatToDownload;
   
-  const filePath = 'data.json';
+  const filePath = `data.${format}`;
 
-  downloader.mainDownloader(format, filePath).then(()=>{
+  downloader.mainDownloader(format, filePath).then((data)=>{
 
-    // res.attachment(`data.${format}`);
-    // res.send(data);
+    res.attachment(filePath);
+    res.send(data);
   });
 });
 
