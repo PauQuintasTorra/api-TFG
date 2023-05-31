@@ -30,9 +30,7 @@ class LZEncoder {
     const encodedSize = compressed.length;
     const compressionRatio = dataOriginal.length / encodedSize;
 
-    console.log('Compression Ratio:', compressionRatio.toFixed(2));
-    console.log('Bits per Sample:', bitsPerSample.toFixed(2));
-    console.log('Bits per Sample Original:', bitsPerSampleOriginal.toFixed(2));
+    return {compressionRatio: compressionRatio, bitsPerSample: bitsPerSample, bitsPerSampleOriginal: bitsPerSampleOriginal};
   }
 
   calculateBitsPixels(height, width, inputArray){

@@ -1,5 +1,6 @@
 const ArithmeticOperation = require("./ArithmeticOperation");
 const EntropyEncoder = require("./EntropyEncoder");
+const LZEncoder = require("./LZEncoder");
 const Metrics = require("./Metrics");
 const Quantizer = require("./Quantizer");
 const Statistics = require("./Statistics");
@@ -66,13 +67,28 @@ class LetsCreate{
           break;
 
         case 'EntropyEncoder':
-          const entropyEncoder = new EntropyEncoder();
-          entropyEncoder.codificacioZipCompress()
+          const encoderType = this.boxes[i].class.encoderType;
+          switch (encoderType) {
+            case 'Lzma':
+              const lzEncoder = new LZEncoder();
+              lzEncoder.mainprova(this.imageOriginal, this.image).then((lzEncoderStats)=>{
+                this.processLogger.entropyStats = {
+                  compressionRatio: Number(lzEncoderStats.compressionRatio.toFixed(3)),
+                  bitsPerSample: Number(lzEncoderStats.bitsPerSample.toFixed(3)),
+                  bitsPerSampleOriginal: Number(lzEncoderStats.bitsPerSampleOriginal.toFixed(3))
+                }
+              });
 
+              break;
+            case 'Zip':
+              
+              break;
+            
+          }
           break;
         
-        
       }
+
       this.processLogger.progress[i] = {
         class: this.boxes[i].class,
         max: statistics.getMax(this.image),
@@ -89,6 +105,7 @@ class LetsCreate{
 
   mainDecreate(){
     const metrics = new Metrics();
+    let isEntropyDecoder = false;
     for (let i = this.boxes.length - 1 ; i >= 0; i--){
       const className = this.boxes[i].class.type;
         
@@ -125,12 +142,22 @@ class LetsCreate{
               this.image = arithmeticOperation.mainMultiplyValue(this.image, this.originalFormat);
               break;
           }
+          break;
+
+        case 'EntropyEncoder':
+          isEntropyDecoder = true;
+          break;
+
       }
         
     }
-    // console.log("PSNR: ", metrics.getPSNR_RGB(this.image, this.imageOriginal));
-    // console.log("PAE: ", metrics.getPAE_RGB(this.image, this.imageOriginal));
-    // console.log("MSE: ", metrics.getMSE_RGB(this.image, this.imageOriginal));
+
+    if(isEntropyDecoder){
+      const prova = new LZEncoder();
+      const {bits, pixels} = prova.calculateBitsPixels(this.image.red.length, this.image.red[0].length ,this.image);
+      this.processLogger.entropyStats.finalBitsPerSample = Number((bits / pixels).toFixed(3));
+    }
+
     this.processLogger.finalStats = {
       psnr: metrics.getPSNR_RGB(this.image, this.imageOriginal),
       pae: metrics.getPAE_RGB(this.image, this.imageOriginal),

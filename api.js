@@ -12,6 +12,7 @@ const LetsCreate = require("./Utils/LetsCreate");
 const Quantizer = require("./Utils/Quantizer");
 const ArithmeticOperation = require("./Utils/ArithmeticOperation");
 const LZEncoder = require("./Utils/LZEncoder");
+const DownloaderFromJson = require("./Utils/DownloaderFromJson");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -94,7 +95,6 @@ app.post(
     processLogger.nameImage = req.files["image"][0].originalname;
     processLogger.timestamp =
       Date.now() + "-" + Math.round(Math.random() * 1000000);
-    const originalSizeImage = req.files["image"][0].size;
     const empty = new ManageFolders("./uploads");
     const imatge = new ImageLoader();
     const boxes = JSON.parse(req.body.boxes);
@@ -103,8 +103,6 @@ app.post(
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
     const deepcopyInputArray = JSON.parse(JSON.stringify(inputArray));
-    const width = inputArray.red[0].length;
-    const height = inputArray.red.length;
 
     const mainCreate = new LetsCreate(
       inputArray,
@@ -116,17 +114,11 @@ app.post(
     const lzEncoder = new LZEncoder();
 
     const arrayToSend = mainCreate.mainCreate();
-    imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then((name) => {
+    imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then(() => {
       lzEncoder.mainprova(deepcopyInputArray, arrayToSend).then(() => {
-        //entco.descodificacioZipCompress(originalSizeImage, weight, height);
         const final = mainCreate.mainDecreate();
 
-        imatge.exportInputArray(final.image, `final_result.${originalFormat}`).then((name) => {
-          const name_path = name;
-          // entco.codificacioZipCompress(name_path).then(() => {
-          //   entco.descodificacioZipCompress();
-          // });
-        });
+        imatge.exportInputArray(final.image, `final_result.${originalFormat}`);
 
         const proces = final.process;
         console.log(proces);
@@ -172,13 +164,18 @@ app.post("/api/getImageCustom", upload.fields([{ name: "originalFormat" }, { nam
 });
 
 app.post("/api/downloadDataFromJson", upload.fields([{ name: "formatToDownload" }]),async (req, res) => {
-  const imatge = new ImageLoader();
-  const format = req.body.originalFormat;
+  
+  const downloader = new DownloaderFromJson();
+  const format = req.body.formatToDownload;
+  
+  const filePath = 'data.json';
 
-  const filePath = `final_result`;
-  const enviar = await imatge.getReadyToSend(filePath, format);
+  downloader.mainDownloader(format, filePath).then((data)=>{
+    console.log(data);
 
-  res.send(enviar);
+    //res.attachment(`data.${format}`);
+    res.send(JSON.stringify(filePath));
+  });
 });
 
 app.post("/api/downloadImageURL", async (req, res) => {
