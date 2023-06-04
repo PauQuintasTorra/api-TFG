@@ -12,6 +12,7 @@ const LetsCreate = require("./Utils/LetsCreate");
 const Quantizer = require("./Utils/Quantizer");
 const ArithmeticOperation = require("./Utils/ArithmeticOperation");
 const LZEncoder = require("./Utils/LZEncoder");
+const ZIPEncoder = require("./Utils/ZIPEncoder");
 const DownloaderFromJson = require("./Utils/DownloaderFromJson");
 
 // Ruta para enviar una respuesta al cliente de Angular
@@ -40,8 +41,8 @@ app.post(
     const formatImage = im.extractFormat(req.files["image"][0].originalname);
     // const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
 
-    const lzEncoder = new LZEncoder();
-    lzEncoder.mainprova(inputArray, aa);
+    const lzEncoder = new ZIPEncoder();
+    lzEncoder.mainprova(inputArray, aa).then(console.log)
 
     // ARITHMETIC OPERATION
     // const sumar = new ArithmeticOperation(5);

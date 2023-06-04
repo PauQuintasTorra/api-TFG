@@ -1,5 +1,5 @@
 const ArithmeticOperation = require("./ArithmeticOperation");
-const EntropyEncoder = require("./EntropyEncoder");
+const ZIPEncoder = require("./ZIPEncoder");
 const LZEncoder = require("./LZEncoder");
 const Metrics = require("./Metrics");
 const Quantizer = require("./Quantizer");
@@ -88,6 +88,15 @@ class LetsCreate{
 
               break;
             case 'Zip':
+              const zipEncoder = new ZIPEncoder();
+              zipEncoder.mainprova(this.imageOriginal, this.image).then((zipEncoderStats)=>{
+                this.processLogger.entropyStats = {
+                  compressionRatio: Number(zipEncoderStats.compressionRatio.toFixed(3)),
+                  bitsPerSample: Number(zipEncoderStats.bitsPerSample.toFixed(3)),
+                  bitsPerSampleOriginal: Number(zipEncoderStats.bitsPerSampleOriginal.toFixed(3))
+                }
+              });
+              
               
               break;
             
