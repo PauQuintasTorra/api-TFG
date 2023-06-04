@@ -33,8 +33,15 @@ class LetsCreate{
         
       switch (className) {
         case 'Wavelet':
-          const subBandX = this.image.red[0].length;
-          const subBandY = this.image.red.length;
+          let subBandX = this.image.red[0].length;
+          let subBandY = this.image.red.length;
+          if(subBandY % 2 != 0){
+            subBandY -= 1;
+          }
+          if(subBandX % 2 != 0){
+            subBandY -= 1;
+          }
+
           const levels = this.boxes[i].class.waveletLevel;
           const wavelet = new Wavelet(subBandX,subBandY, levels);
           this.image = wavelet.mainTransform(this.image, this.originalFormat);
@@ -88,7 +95,7 @@ class LetsCreate{
           break;
         
       }
-
+      
       this.processLogger.progress[i] = {
         class: this.boxes[i].class,
         max: statistics.getMax(this.image),
@@ -111,8 +118,14 @@ class LetsCreate{
         
       switch (className) {
         case 'Wavelet':
-          const subBandX = this.image.red[0].length;
-          const subBandY = this.image.red.length;
+          let subBandX = this.image.red[0].length;
+          let subBandY = this.image.red.length;
+          if(subBandY % 2 != 0){
+            subBandY -= 1;
+          }
+          if(subBandX % 2 != 0){
+            subBandY -= 1;
+          }
           const levels = this.boxes[i].class.waveletLevel;
           const wavelet = new Wavelet(subBandX,subBandY, levels);
           this.image = wavelet.mainDestransform(this.image, this.originalFormat);

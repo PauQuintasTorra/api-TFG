@@ -16,10 +16,25 @@ class Wavelet {
   }
 
   mainDestransform(inputArray, formatImage) {
-    this.SubbandSizeX = parseInt(
-      inputArray.red[0].length / 2 ** (this.level - 1)
-    );
-    this.SubbandSizeY = parseInt(inputArray.red.length / 2 ** (this.level - 1));
+    if(inputArray.red[0].length % 2 != 0){
+      this.SubbandSizeX = parseInt(
+        (inputArray.red[0].length - 1) / 2 ** (this.level - 1)
+      );
+
+    } else {
+      this.SubbandSizeX = parseInt(
+        inputArray.red[0].length / 2 ** (this.level - 1)
+      );
+    }
+
+    if(inputArray.red.length % 2 != 0){
+      this.SubbandSizeY = parseInt((inputArray.red.length - 1) / 2 ** (this.level - 1));
+    } else {
+      this.SubbandSizeY = parseInt(inputArray.red.length / 2 ** (this.level - 1));
+    }
+
+    
+
 
     const destrans_inputArray = this.RHaar_destransByLevelRGB(inputArray);
 
