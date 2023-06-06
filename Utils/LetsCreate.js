@@ -13,7 +13,6 @@ class LetsCreate {
     this.image = image;
     this.imageOriginal = JSON.parse(JSON.stringify(this.image));
     this.processLogger = processLogger;
-    this.noProcess = false;
   }
 
   mainCreate() {
@@ -27,12 +26,8 @@ class LetsCreate {
       mean: statistics.getMeanRGB(this.image),
     };
 
-    for (let i = 0; i < 4; i++) {
-      let className = "Default";
-      if (i < this.boxes.length) {
-        className = this.boxes[i].class.type;
-      }
-
+    for (let i = 0; i < this.boxes.length; i++) {
+      const className = this.boxes[i].class.type;
       switch (className) {
         case "Wavelet":
           let subBandX = this.image.red[0].length;
@@ -141,20 +136,18 @@ class LetsCreate {
             varianze: "Sense dades",
             mean: "Sense dades",
           };
-
           break;
       }
-      if (!this.noProcess) {
-        this.processLogger.progress[i] = {
-          class: this.boxes[i].class,
-          max: statistics.getMax(this.image),
-          min: statistics.getMin(this.image),
-          entropy: statistics.getEntropyOrderZeroRGB(this.image),
-          varianze: statistics.getVarianzeRGB(this.image),
-          mean: statistics.getMeanRGB(this.image),
-        };
-        this.noProcess = false;
-      }
+
+      this.processLogger.progress[i] = {
+        class: this.boxes[i].class,
+        max: statistics.getMax(this.image),
+        min: statistics.getMin(this.image),
+        entropy: statistics.getEntropyOrderZeroRGB(this.image),
+        varianze: statistics.getVarianzeRGB(this.image),
+        mean: statistics.getMeanRGB(this.image),
+      };
+      
     }
 
     const imageSend = JSON.parse(JSON.stringify(this.image));
