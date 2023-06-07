@@ -13,6 +13,8 @@ class LetsCreate {
     this.image = image;
     this.imageOriginal = JSON.parse(JSON.stringify(this.image));
     this.processLogger = processLogger;
+    this.noProcess = false;
+    this.hasEncoder = false;
   }
 
   mainCreate() {
@@ -26,8 +28,11 @@ class LetsCreate {
       mean: statistics.getMeanRGB(this.image),
     };
 
-    for (let i = 0; i < this.boxes.length; i++) {
-      const className = this.boxes[i].class.type;
+    for (let i = 0; i < 4; i++) {
+      let className = "Defalt";
+      if(i < this.boxes.length){
+        className = this.boxes[i].class.type;
+      }
       switch (className) {
         case "Wavelet":
           let subBandX = this.image.red[0].length;
@@ -83,6 +88,7 @@ class LetsCreate {
           break;
 
         case "EntropyEncoder":
+          this.hasEncoder = true;
           const encoderType = this.boxes[i].class.encoderType;
           switch (encoderType) {
             case "Lzma":
@@ -129,7 +135,9 @@ class LetsCreate {
         default:
           this.noProcess = true;
           this.processLogger.progress[i] = {
+            type: "Sense dades",
             class: "Sense dades",
+            value: "Sense dades",
             max: "Sense dades",
             min: "Sense dades",
             entropy: "Sense dades",
@@ -138,15 +146,25 @@ class LetsCreate {
           };
           break;
       }
-
-      this.processLogger.progress[i] = {
-        class: this.boxes[i].class,
-        max: statistics.getMax(this.image),
-        min: statistics.getMin(this.image),
-        entropy: statistics.getEntropyOrderZeroRGB(this.image),
-        varianze: statistics.getVarianzeRGB(this.image),
-        mean: statistics.getMeanRGB(this.image),
-      };
+      if(!this.noProcess){
+        this.processLogger.progress[i] = {
+          class: this.boxes[i].class,
+          max: statistics.getMax(this.image),
+          min: statistics.getMin(this.image),
+          entropy: statistics.getEntropyOrderZeroRGB(this.image),
+          varianze: statistics.getVarianzeRGB(this.image),
+          mean: statistics.getMeanRGB(this.image),
+        };
+        this.noProcess = false;
+      }
+      
+      if(!this.hasEncoder){
+        this.processLogger.entropyStats = {
+          compressionRatio: 0,
+          bitsPerSample: 0,
+          bitsPerSampleOriginal: 0
+        };
+      }
       
     }
 
@@ -235,6 +253,8 @@ class LetsCreate {
       this.processLogger.entropyStats.finalBitsPerSample = Number(
         (bits / pixels).toFixed(3)
       );
+    } else{
+      this.processLogger.entropyStats.finalBitsPerSample = 0;
     }
 
     this.processLogger.finalStats = {

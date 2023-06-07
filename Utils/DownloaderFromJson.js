@@ -31,10 +31,34 @@ class DownloaderFromJson {
                     headers[`${prefix}${key}`] = `Tipus de classe`;
                     break;
                   case `waveletType`:
-                    headers[`${prefix}${key}`] = `Tipus de transformada Wavelet`;
+                    headers[`${prefix}${key}`] = `Tipus`;
                     break;
                   case `waveletLevel`:
-                    headers[`${prefix}${key}`] = `Nivell de transformada Wavelet`;
+                    headers[`${prefix}${key}`] = `Valor`;
+                    break;
+                  case `operationNumber`:
+                    headers[`${prefix}${key}`] = `Valor`;
+                    break;
+                  case `q_step`:
+                    headers[`${prefix}${key}`] = `Valor`;
+                    break;
+                  case `encoderValue`:
+                    headers[`${prefix}${key}`] = `Valor`;
+                    break;
+                  case `value`:
+                    headers[`${prefix}${key}`] = `Valor`;
+                    break;
+                  case `quantizerType`:
+                    headers[`${prefix}${key}`] = `Tipus`;
+                    break;
+                  case `encoderType`:
+                    headers[`${prefix}${key}`] = `Tipus`;
+                    break;
+                  case `operationType`:
+                    headers[`${prefix}${key}`] = `Tipus`;
+                    break;
+                  case `class`:
+                    headers[`${prefix}${key}`] = `Tipus`;
                     break;
                   case `max`:
                     headers[`${prefix}${key}`] = `Màxim`;
@@ -50,12 +74,6 @@ class DownloaderFromJson {
                     break;
                   case `varianze`:
                     headers[`${prefix}${key}`] = `Variança`;
-                    break;
-                    case `q_step`:
-                    headers[`${prefix}${key}`] = `Pas de quantització`;
-                    break;
-                  case `encoderType`:
-                    headers[`${prefix}${key}`] = `Tipus de codificador per entropia`;
                     break;
                   case `compressionRatio`:
                     headers[`${prefix}${key}`] = `Ratio de compressió`;
@@ -78,14 +96,8 @@ class DownloaderFromJson {
                   case `mse`:
                     headers[`${prefix}${key}`] = `"Mean Square Error"`;
                     break;
-                  case `operationType`:
-                    headers[`${prefix}${key}`] = `Tipus d'operació`;
-                    break;
-                  case `operationNumber`:
-                    headers[`${prefix}${key}`] = `Valor a operar`;
-                    break;
-
                   default:
+                    console.log(`${key}, ${prefix}`)
                     headers[`${prefix}${key}`] = `No existeix`;
                     break;
                 }
