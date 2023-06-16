@@ -33,7 +33,12 @@ class ImageLoader {
 
   async exportInputArray(inputArray, name) {
     return new Promise((resolve, reject) => {
-      saveArrayIntoImage(inputArray.red, inputArray.green, inputArray.blue, name).then((name)=>{
+      saveArrayIntoImage(
+        inputArray.red,
+        inputArray.green,
+        inputArray.blue,
+        name
+      ).then((name) => {
         resolve(name);
       });
     });
@@ -41,7 +46,7 @@ class ImageLoader {
 
   async getReadyToSend(name, formatSelected) {
     let outputFile = `send_${name}.${formatSelected}`;
-    if(name == `final_result.${formatSelected}`) {
+    if (name == `final_result.${formatSelected}`) {
       outputFile = `send_${name}.${formatSelected}`;
     }
     const binaryData = await fs.readFileSync(`${name}.${formatSelected}`);

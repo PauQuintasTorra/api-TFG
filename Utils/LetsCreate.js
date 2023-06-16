@@ -5,9 +5,11 @@ const Metrics = require("./Metrics");
 const Quantizer = require("./Quantizer");
 const Statistics = require("./Statistics");
 const Wavelet = require("./Wavelet");
+const ManageFolders = require("./ManageFolders");
+const ManageImage = require("./ManageImage");
 
 class LetsCreate {
-  constructor(image, boxes, originalFormat, processLogger) {
+  constructor(image, boxes, originalFormat, processLogger, xtocut, ytocut) {
     this.originalFormat = originalFormat;
     this.boxes = boxes;
     this.image = image;
@@ -15,6 +17,8 @@ class LetsCreate {
     this.processLogger = processLogger;
     this.noProcess = false;
     this.hasEncoder = false;
+    this.xToCut = xtocut;
+    this.yToCut = ytocut;
   }
 
   mainCreate() {
@@ -30,7 +34,7 @@ class LetsCreate {
 
     for (let i = 0; i < 4; i++) {
       let className = "Defalt";
-      if(i < this.boxes.length){
+      if (i < this.boxes.length) {
         className = this.boxes[i].class.type;
       }
       switch (className) {
@@ -146,7 +150,7 @@ class LetsCreate {
           };
           break;
       }
-      if(!this.noProcess){
+      if (!this.noProcess) {
         this.processLogger.progress[i] = {
           class: this.boxes[i].class,
           max: statistics.getMax(this.image),
@@ -157,15 +161,14 @@ class LetsCreate {
         };
         this.noProcess = false;
       }
-      
-      if(!this.hasEncoder){
+
+      if (!this.hasEncoder) {
         this.processLogger.entropyStats = {
           compressionRatio: 0,
           bitsPerSample: 0,
-          bitsPerSampleOriginal: 0
+          bitsPerSampleOriginal: 0,
         };
       }
-      
     }
 
     const imageSend = JSON.parse(JSON.stringify(this.image));
@@ -243,6 +246,32 @@ class LetsCreate {
       }
     }
 
+    const im = new ManageImage();
+    const redFinal = im.selectPositions(
+      this.image.red,
+      0,
+      this.yToCut,
+      0,
+      this.xToCut
+    );
+    const greenFinal = im.selectPositions(
+      this.image.green,
+      0,
+      this.yToCut,
+      0,
+      this.xToCut
+    );
+    const blueFinal = im.selectPositions(
+      this.image.blue,
+      0,
+      this.yToCut,
+      0,
+      this.xToCut
+    );
+    const finalResult = { red: redFinal, green: greenFinal, blue: blueFinal };
+
+    this.image = finalResult;
+
     if (isEntropyDecoder) {
       const prova = new LZEncoder();
       const { bits, pixels } = prova.calculateBitsPixels(
@@ -253,7 +282,7 @@ class LetsCreate {
       this.processLogger.entropyStats.finalBitsPerSample = Number(
         (bits / pixels).toFixed(3)
       );
-    } else{
+    } else {
       this.processLogger.entropyStats.finalBitsPerSample = 0;
     }
 

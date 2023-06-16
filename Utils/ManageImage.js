@@ -10,7 +10,19 @@ class ManageImage {
     this.width = 0;
   }
 
-  pathToArrayRGB() {
+  selectPositions(array2D, startRow, endRow, startColumn, endColumn) {
+    const selectedArray = [];
+
+    for (let i = startRow; i < endRow; i++) {
+      const row = array2D[i];
+      const selectedRow = row.slice(startColumn, endColumn);
+      selectedArray.push(selectedRow);
+    }
+
+    return selectedArray;
+  }
+
+  async pathToArrayRGB() {
     return new Promise((resolve, reject) => {
       Jimp.read(this.path, (err, image) => {
         if (err) throw err;
@@ -42,11 +54,15 @@ class ManageImage {
             blueChannel[y][x] = b;
           }
         }
-        
-        saveArrayIntoImage(redChannel, greenChannel, blueChannel, `imatge_original.jpg`).then((name)=>{
+
+        saveArrayIntoImage(
+          redChannel,
+          greenChannel,
+          blueChannel,
+          `imatge_original.jpg`
+        ).then((name) => {
           resolve({ red: redChannel, green: greenChannel, blue: blueChannel });
         });
-        
       });
     });
   }

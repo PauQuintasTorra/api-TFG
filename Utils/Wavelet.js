@@ -1,3 +1,4 @@
+const { Z_MEM_ERROR } = require("zlib");
 const saveArrayIntoImage = require("./Utils");
 
 class Wavelet {
@@ -8,38 +9,56 @@ class Wavelet {
   }
 
   mainTransform(inputArray, formatImage) {
-    const trans_inputArray = this.RHaar_transByLevelRGB(inputArray);
+    const { subBandX, subBandY } = this.checkPotential();
+    const new_red = this.correctArrayToTransform(
+      inputArray.red,
+      subBandX,
+      subBandY
+    );
+    const new_green = this.correctArrayToTransform(
+      inputArray.green,
+      subBandX,
+      subBandY
+    );
+    const new_blue = this.correctArrayToTransform(
+      inputArray.blue,
+      subBandX,
+      subBandY
+    );
 
-    saveArrayIntoImage(trans_inputArray.red, trans_inputArray.green, trans_inputArray.blue, `wavelet_Haar_${this.level}.${formatImage}`);
-    
+    const newArray = JSON.parse(
+      JSON.stringify({ red: new_red, green: new_green, blue: new_blue })
+    );
+    this.SubbandSizeX = subBandX;
+    this.SubbandSizeY = subBandY;
+
+    const trans_inputArray = this.RHaar_transByLevelRGB(newArray);
+
+    saveArrayIntoImage(
+      trans_inputArray.red,
+      trans_inputArray.green,
+      trans_inputArray.blue,
+      `wavelet_Haar_${this.level}.${formatImage}`
+    );
+
     return trans_inputArray;
   }
 
   mainDestransform(inputArray, formatImage) {
-    if(inputArray.red[0].length % 2 != 0){
-      this.SubbandSizeX = parseInt(
-        (inputArray.red[0].length - 1) / 2 ** (this.level - 1)
-      );
-
-    } else {
-      this.SubbandSizeX = parseInt(
-        inputArray.red[0].length / 2 ** (this.level - 1)
-      );
-    }
-
-    if(inputArray.red.length % 2 != 0){
-      this.SubbandSizeY = parseInt((inputArray.red.length - 1) / 2 ** (this.level - 1));
-    } else {
-      this.SubbandSizeY = parseInt(inputArray.red.length / 2 ** (this.level - 1));
-    }
-
-    
-
+    this.SubbandSizeX = parseInt(
+      inputArray.red[0].length / 2 ** (this.level - 1)
+    );
+    this.SubbandSizeY = parseInt(inputArray.red.length / 2 ** (this.level - 1));
 
     const destrans_inputArray = this.RHaar_destransByLevelRGB(inputArray);
 
-    saveArrayIntoImage(destrans_inputArray.red, destrans_inputArray.green, destrans_inputArray.blue, `reverse_wavelet_Haar_${this.level}.${formatImage}`);
-    
+    saveArrayIntoImage(
+      destrans_inputArray.red,
+      destrans_inputArray.green,
+      destrans_inputArray.blue,
+      `reverse_wavelet_Haar_${this.level}.${formatImage}`
+    );
+
     return destrans_inputArray;
   }
 
@@ -118,21 +137,6 @@ class Wavelet {
     return matrix;
   }
 
-  RHaar_transByLevel(matrix) {
-    if (this.level > 7) {
-      this.level = 7;
-    }
-    var m_ = this.RHaar_transform(matrix);
-    if (this.level !== 0) {
-      for (let l = 0; l < this.level; l++) {
-        this.SubbandSizeX = parseInt(this.SubbandSizeX / 2);
-        this.SubbandSizeY = parseInt(this.SubbandSizeY / 2);
-        m_ = this.RHaar_transform(m_);
-      }
-    }
-    return m_;
-  }
-
   RHaar_transByLevelRGB(inputArray) {
     if (this.level > 7) {
       this.level = 7;
@@ -150,23 +154,6 @@ class Wavelet {
       }
     }
     return { red: m_red, green: m_green, blue: m_blue };
-  }
-
-  RHaar_destransByLevel(matrix) {
-    if (this.level > 7) {
-      this.level = 7;
-    }
-    this.SubbandSizeX = parseInt(matrix[0].length / 2 ** this.level);
-    this.SubbandSizeY = parseInt(matrix.length / 2 ** this.level);
-    let m_ = RHaar_destransform(matrix);
-    if (this.level != 0) {
-      for (let l = 0; l < this.level; l++) {
-        this.SubbandSizeX = parseInt(this.SubbandSizeX * 2);
-        this.SubbandSizeY = parseInt(this.SubbandSizeY * 2);
-        m_ = RHaar_destransform(m_);
-      }
-    }
-    return m_;
   }
 
   RHaar_destransByLevelRGB(inputArray) {
@@ -209,6 +196,38 @@ class Wavelet {
     return arr.map((x) => x[column]);
   }
 
+  RHaar_destransByLevel(matrix) {
+    if (this.level > 7) {
+      this.level = 7;
+    }
+    this.SubbandSizeX = parseInt(matrix[0].length / 2 ** this.level);
+    this.SubbandSizeY = parseInt(matrix.length / 2 ** this.level);
+    let m_ = RHaar_destransform(matrix);
+    if (this.level != 0) {
+      for (let l = 0; l < this.level; l++) {
+        this.SubbandSizeX = parseInt(this.SubbandSizeX * 2);
+        this.SubbandSizeY = parseInt(this.SubbandSizeY * 2);
+        m_ = RHaar_destransform(m_);
+      }
+    }
+    return m_;
+  }
+
+  RHaar_transByLevel(matrix) {
+    if (this.level > 7) {
+      this.level = 7;
+    }
+    var m_ = this.RHaar_transform(matrix);
+    if (this.level !== 0) {
+      for (let l = 0; l < this.level; l++) {
+        this.SubbandSizeX = parseInt(this.SubbandSizeX / 2);
+        this.SubbandSizeY = parseInt(this.SubbandSizeY / 2);
+        m_ = this.RHaar_transform(m_);
+      }
+    }
+    return m_;
+  }
+
   getMaxMin(array) {
     let max = -Infinity;
     let min = Infinity;
@@ -224,6 +243,79 @@ class Wavelet {
       }
     }
     return { max, min };
+  }
+
+  checkPotential() {
+    let subBandX = this.SubbandSizeX;
+    let subBandY = this.SubbandSizeY;
+    let settedX = false;
+    let settedY = false;
+
+    for (let i = 0; i < 15; i++) {
+      if (!settedX) {
+        if (subBandX === 2 ** i) {
+          settedX = true;
+        } else {
+          if (subBandX < 2 ** i) {
+            subBandX = 2 ** i;
+            settedX = true;
+          }
+        }
+      }
+      if (!settedY) {
+        if (subBandY === 2 ** i) {
+          settedY = true;
+        } else {
+          if (subBandY < 2 ** i) {
+            subBandY = 2 ** i;
+            settedY = true;
+          }
+        }
+      }
+    }
+    return { subBandX: subBandX, subBandY: subBandY };
+  }
+
+  transposeArray(array) {
+    const rows = array.length;
+    const columns = array[0].length;
+
+    const transposedArray = [];
+    for (let i = 0; i < columns; i++) {
+      transposedArray[i] = [];
+      for (let j = 0; j < rows; j++) {
+        transposedArray[i][j] = array[j][i];
+      }
+    }
+
+    return transposedArray;
+  }
+
+  correctArrayToTransform(inputArray, subBandX, subBandY) {
+    const originalArray = inputArray;
+    const xExpansion = subBandX - this.SubbandSizeX;
+
+    let expandedArray = inputArray;
+    if (xExpansion != 0) {
+      expandedArray = originalArray.map((row) => [
+        ...row,
+        ...row.slice(-xExpansion).reverse(),
+      ]);
+    }
+
+    const originalArrayY = this.transposeArray(expandedArray);
+
+    const yExpansion = subBandY - this.SubbandSizeY;
+
+    let expandedArrayY = originalArrayY;
+    if (yExpansion != 0) {
+      expandedArrayY = originalArrayY.map((row) => [
+        ...row,
+        ...row.slice(-yExpansion).reverse(),
+      ]);
+    }
+
+    return this.transposeArray(expandedArrayY);
   }
 }
 

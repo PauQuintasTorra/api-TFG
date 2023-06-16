@@ -7,6 +7,7 @@ const ImageLoader = require("./Utils/ImageLoader");
 const ManageFolders = require("./Utils/ManageFolders");
 const ManageImage = require("./Utils/ManageImage");
 const Wavelet = require("./Utils/Wavelet");
+const Metrics = require("./Utils/Metrics");
 const Statistics = require("./Utils/Statistics");
 const LetsCreate = require("./Utils/LetsCreate");
 const Quantizer = require("./Utils/Quantizer");
@@ -14,6 +15,9 @@ const ArithmeticOperation = require("./Utils/ArithmeticOperation");
 const LZEncoder = require("./Utils/LZEncoder");
 const ZIPEncoder = require("./Utils/ZIPEncoder");
 const DownloaderFromJson = require("./Utils/DownloaderFromJson");
+const Wavelet53 = require("./Utils/Wavelet53");
+const arrayReadyToWork = require("./Utils/Utils");
+const selectPositions = require("./Utils/Utils");
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -41,8 +45,44 @@ app.post(
     const formatImage = im.extractFormat(req.files["image"][0].originalname);
     // const enviar__ = await imatge.exportRAW(formatImage, formatSelected);
 
+    const wavelet = new Wavelet(aa.red[0].length, aa.red.length, 3);
+
+    const provadeprova = wavelet.mainTransform(aa, "jpg");
+    const provadereturn = wavelet.mainDestransform(provadeprova, "jpg");
+
+    const selectedArray_red = im.selectPositions(
+      provadereturn.red,
+      0,
+      provaAr.red.length,
+      0,
+      provaAr.red[0].length
+    );
+    const selectedArray_green = im.selectPositions(
+      provadereturn.green,
+      0,
+      provaAr.red.length,
+      0,
+      provaAr.red[0].length
+    );
+    const selectedArray_blue = im.selectPositions(
+      provadereturn.blue,
+      0,
+      provaAr.red.length,
+      0,
+      provaAr.red[0].length
+    );
+
+    const arrayFinal = {
+      red: selectedArray_red,
+      green: selectedArray_green,
+      blue: selectedArray_blue,
+    };
+
+    const metrics = new Metrics();
+    console.log("psnr: ", metrics.getPSNR_RGB(provaAr, arrayFinal));
+
     const lzEncoder = new ZIPEncoder();
-    lzEncoder.mainprova(inputArray, aa).then(console.log)
+    lzEncoder.mainprova(provaAr, arrayFinal).then(console.log);
 
     // ARITHMETIC OPERATION
     // const sumar = new ArithmeticOperation(5);
@@ -78,7 +118,7 @@ app.post(
     // );
 
     // const name_path = await imatge.exportInputArray(b, formatImage);
-    const enviar = await imatge.getReadyToSend('imatge_original', formatImage);
+    const enviar = await imatge.getReadyToSend("imatge_original", formatImage);
     res.send(enviar);
     empty.deleteAll();
   }
@@ -104,19 +144,24 @@ app.post(
     const im = new ManageImage(req.files["image"][0].path);
     const inputArray = await im.pathToArrayRGB();
     const deepcopyInputArray = JSON.parse(JSON.stringify(inputArray));
+    const xToCut = inputArray.red[0].length;
+    const yToCut = inputArray.red.length;
 
     const mainCreate = new LetsCreate(
       inputArray,
       boxes,
       originalFormat,
-      processLogger
-    );    
-    
+      processLogger,
+      xToCut,
+      yToCut
+    );
+
     const lzEncoder = new LZEncoder();
 
     const arrayToSend = mainCreate.mainCreate();
-    imatge.exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`).then(() => {
-      lzEncoder.mainprova(deepcopyInputArray, arrayToSend).then(() => {
+    imatge
+      .exportInputArray(arrayToSend, `final_result_compress.${originalFormat}`)
+      .then(() => {
         const final = mainCreate.mainDecreate();
 
         imatge.exportInputArray(final.image, `final_result.${originalFormat}`);
@@ -124,10 +169,10 @@ app.post(
         const proces = final.process;
         console.log(proces);
 
-        const filePath = 'data.json';
+        const filePath = "data.json";
         const data = JSON.stringify(proces, null, 2);
         if (fs.existsSync(filePath)) {
-          const fileContent = fs.readFileSync(filePath, 'utf-8');
+          const fileContent = fs.readFileSync(filePath, "utf-8");
           const existingData = JSON.parse(fileContent);
           existingData.push(proces);
           const updatedContent = JSON.stringify(existingData, null, 2);
@@ -138,62 +183,66 @@ app.post(
         res.send(data);
         empty.deleteAll();
       });
-    });
-
   }
 );
 
-app.post("/api/getFinalImage", upload.fields([{ name: "originalFormat" }]),async (req, res) => {
-  const imatge = new ImageLoader();
-  const format = req.body.originalFormat;
+app.post(
+  "/api/getFinalImage",
+  upload.fields([{ name: "originalFormat" }]),
+  async (req, res) => {
+    const imatge = new ImageLoader();
+    const format = req.body.originalFormat;
 
-  const filePath = `final_result`;
-  const enviar = await imatge.getReadyToSend(filePath, format);
+    const filePath = `final_result`;
+    const enviar = await imatge.getReadyToSend(filePath, format);
 
-  res.send(enviar);
-});
+    res.send(enviar);
+  }
+);
 
-app.post("/api/getImageCustom", upload.fields([{ name: "originalFormat" }, { name: "name" }]), async (req, res) => {
-  
-  const imatge = new ImageLoader();
-  const format = req.body.originalFormat;
-  const filePath = req.body.name;
+app.post(
+  "/api/getImageCustom",
+  upload.fields([{ name: "originalFormat" }, { name: "name" }]),
+  async (req, res) => {
+    const imatge = new ImageLoader();
+    const format = req.body.originalFormat;
+    const filePath = req.body.name;
 
-  const enviar = await imatge.getReadyToSend(filePath, format);
+    const enviar = await imatge.getReadyToSend(filePath, format);
 
-  res.send(enviar);
-});
+    res.send(enviar);
+  }
+);
 
-app.post("/api/downloadDataFromJson", upload.fields([{ name: "formatToDownload" }]),async (req, res) => {
-  
-  const downloader = new DownloaderFromJson();
-  const format = req.body.formatToDownload;
-  
-  const filePath = `data.${format}`;
+app.post(
+  "/api/downloadDataFromJson",
+  upload.fields([{ name: "formatToDownload" }]),
+  async (req, res) => {
+    const downloader = new DownloaderFromJson();
+    const format = req.body.formatToDownload;
 
-  downloader.mainDownloader(format, filePath).then((data)=>{
+    const filePath = `data.${format}`;
 
-    res.attachment(filePath);
-    res.send(data);
+    downloader.mainDownloader(format, filePath).then((data) => {
+      res.attachment(filePath);
+      res.send(data);
+    });
+  }
+);
+
+app.post("/api/deleteJSON", async (req, res) => {
+  const filePath = "data.json";
+
+  fs.unlink(filePath, () => {
+    console.log("Deleted correctly!");
   });
 });
 
-app.post("/api/deleteJSON",async (req, res) => {
-  const filePath = 'data.json';
+app.post("/api/isEmptyJSON", async (req, res) => {
+  const filePath = "data.json";
 
-  fs.unlink(filePath, ()=>{
-    console.log("Deleted correctly!");
-  })
-
+  res.send({ exists: fs.existsSync(filePath) });
 });
-
-app.post("/api/isEmptyJSON",async (req, res) => {
-  const filePath = 'data.json';
-
-  res.send( {exists: fs.existsSync(filePath)});
-
-});
-
 
 app.post("/api/downloadImageURL", async (req, res) => {
   console.log(req);
