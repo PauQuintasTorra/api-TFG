@@ -98,7 +98,12 @@ class LetsCreate {
             case "Lzma":
               const lzEncoder = new LZEncoder();
               lzEncoder
-                .mainprova(this.imageOriginal, this.image)
+                .mainprova(
+                  this.imageOriginal,
+                  this.image,
+                  this.xToCut,
+                  this.yToCut
+                )
                 .then((lzEncoderStats) => {
                   this.processLogger.entropyStats = {
                     compressionRatio: Number(
@@ -117,7 +122,12 @@ class LetsCreate {
             case "Zip":
               const zipEncoder = new ZIPEncoder();
               zipEncoder
-                .mainprova(this.imageOriginal, this.image)
+                .mainprova(
+                  this.imageOriginal,
+                  this.image,
+                  this.xToCut,
+                  this.yToCut
+                )
                 .then((zipEncoderStats) => {
                   this.processLogger.entropyStats = {
                     compressionRatio: Number(
@@ -161,14 +171,13 @@ class LetsCreate {
         };
         this.noProcess = false;
       }
-
-      if (!this.hasEncoder) {
-        this.processLogger.entropyStats = {
-          compressionRatio: 0,
-          bitsPerSample: 0,
-          bitsPerSampleOriginal: 0,
-        };
-      }
+    }
+    if (!this.hasEncoder) {
+      this.processLogger.entropyStats = {
+        compressionRatio: 0,
+        bitsPerSample: 0,
+        bitsPerSampleOriginal: 0,
+      };
     }
 
     const imageSend = JSON.parse(JSON.stringify(this.image));
