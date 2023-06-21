@@ -76,16 +76,10 @@ class DownloaderFromJson {
                     headers[`${prefix}${key}`] = `Variança`;
                     break;
                   case `compressionRatio`:
-                    headers[`${prefix}${key}`] = `Ratio de compressió`;
+                    headers[`${prefix}${key}`] = `Rati de compressió`;
                     break;
-                  case `bitsPerSample`:
-                    headers[`${prefix}${key}`] = `Bits per mostra (imatge comprimida)`;
-                    break;
-                  case `bitsPerSampleOriginal`:
-                    headers[`${prefix}${key}`] = `Bits per mostra (imatge original)`;
-                    break;
-                  case `finalBitsPerSample`:
-                    headers[`${prefix}${key}`] = `Bits per mostra (imatge modificada)`;
+                  case `finalEntropy`:
+                    headers[`${prefix}${key}`] = `Entropia final`;
                     break;
                   case `psnr`:
                     headers[`${prefix}${key}`] = `"Peak Signal to Noise Ratio"`;

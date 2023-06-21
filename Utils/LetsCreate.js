@@ -19,18 +19,22 @@ class LetsCreate {
     this.hasEncoder = false;
     this.xToCut = xtocut;
     this.yToCut = ytocut;
+    this.initialEntropy = 0;
+    this.lastEntropy = 0;
   }
 
   mainCreate() {
     const statistics = new Statistics();
     this.processLogger.progress = [];
+    this.processLogger.entropyStats = {};
     this.processLogger.initStats = {
       max: statistics.getMax(this.image),
       min: statistics.getMin(this.image),
-      entropy: statistics.getEntropyOrderZeroRGB(this.image),
-      varianze: statistics.getVarianzeRGB(this.image),
-      mean: statistics.getMeanRGB(this.image),
+      entropy: Number(statistics.getEntropyOrderZeroRGB(this.image).toFixed(2)),
+      varianze: Number(statistics.getVarianzeRGB(this.image).toFixed(2)),
+      mean: Number(statistics.getMeanRGB(this.image).toFixed(2)),
     };
+    this.initialEntropy = statistics.getEntropyOrderZeroRGB(this.image);
 
     for (let i = 0; i < 4; i++) {
       let className = "Defalt";
@@ -102,20 +106,13 @@ class LetsCreate {
                   this.imageOriginal,
                   this.image,
                   this.xToCut,
-                  this.yToCut
+                  this.yToCut,
+                  this.initialEntropy,
+                  this.lastEntropy
                 )
                 .then((lzEncoderStats) => {
-                  this.processLogger.entropyStats = {
-                    compressionRatio: Number(
-                      lzEncoderStats.compressionRatio.toFixed(3)
-                    ),
-                    bitsPerSample: Number(
-                      lzEncoderStats.bitsPerSample.toFixed(3)
-                    ),
-                    bitsPerSampleOriginal: Number(
-                      lzEncoderStats.bitsPerSampleOriginal.toFixed(3)
-                    ),
-                  };
+                  this.processLogger.entropyStats.compressionRatio = Number(lzEncoderStats.toFixed(2)); 
+
                 });
 
               break;
@@ -126,21 +123,13 @@ class LetsCreate {
                   this.imageOriginal,
                   this.image,
                   this.xToCut,
-                  this.yToCut
+                  this.yToCut,
+                  this.initialEntropy,
+                  this.lastEntropy
                 )
                 .then((zipEncoderStats) => {
-                  this.processLogger.entropyStats = {
-                    compressionRatio: Number(
-                      zipEncoderStats.compressionRatio.toFixed(3)
-                    ),
-                    bitsPerSample: Number(
-                      zipEncoderStats.bitsPerSample.toFixed(3)
-                    ),
-                    bitsPerSampleOriginal: Number(
-                      zipEncoderStats.bitsPerSampleOriginal.toFixed(3)
-                    ),
-                  };
-                });
+                    this.processLogger.entropyStats.compressionRatio = Number(zipEncoderStats.toFixed(2)); 
+                  });
 
               break;
           }
@@ -165,20 +154,20 @@ class LetsCreate {
           class: this.boxes[i].class,
           max: statistics.getMax(this.image),
           min: statistics.getMin(this.image),
-          entropy: statistics.getEntropyOrderZeroRGB(this.image),
-          varianze: statistics.getVarianzeRGB(this.image),
-          mean: statistics.getMeanRGB(this.image),
+          entropy: Number(statistics.getEntropyOrderZeroRGB(this.image).toFixed(2)),
+          varianze: Number(statistics.getVarianzeRGB(this.image).toFixed(2)),
+          mean: Number(statistics.getMeanRGB(this.image).toFixed(2)),
         };
         this.noProcess = false;
       }
+      this.lastEntropy = statistics.getEntropyOrderZeroRGB(this.image);
     }
     if (!this.hasEncoder) {
       this.processLogger.entropyStats = {
         compressionRatio: 0,
-        bitsPerSample: 0,
-        bitsPerSampleOriginal: 0,
       };
     }
+    this.processLogger.entropyStats.finalEntropy = Number(this.lastEntropy.toFixed(2));
 
     const imageSend = JSON.parse(JSON.stringify(this.image));
     return imageSend;
@@ -186,7 +175,6 @@ class LetsCreate {
 
   mainDecreate() {
     const metrics = new Metrics();
-    let isEntropyDecoder = false;
     for (let i = this.boxes.length - 1; i >= 0; i--) {
       const className = this.boxes[i].class.type;
 
@@ -250,7 +238,6 @@ class LetsCreate {
           break;
 
         case "EntropyEncoder":
-          isEntropyDecoder = true;
           break;
       }
     }
@@ -281,24 +268,10 @@ class LetsCreate {
 
     this.image = finalResult;
 
-    if (isEntropyDecoder) {
-      const prova = new LZEncoder();
-      const { bits, pixels } = prova.calculateBitsPixels(
-        this.image.red.length,
-        this.image.red[0].length,
-        this.image
-      );
-      this.processLogger.entropyStats.finalBitsPerSample = Number(
-        (bits / pixels).toFixed(3)
-      );
-    } else {
-      this.processLogger.entropyStats.finalBitsPerSample = 0;
-    }
-
     this.processLogger.finalStats = {
-      psnr: metrics.getPSNR_RGB(this.image, this.imageOriginal),
-      pae: metrics.getPAE_RGB(this.image, this.imageOriginal),
-      mse: metrics.getMSE_RGB(this.image, this.imageOriginal),
+      psnr: metrics.getPSNR_RGB(this.image, this.imageOriginal) === 0 ? "∞": Number(metrics.getPSNR_RGB(this.image, this.imageOriginal).toFixed(2)),
+      pae: Number(metrics.getPAE_RGB(this.image, this.imageOriginal).toFixed(2)),
+      mse: Number(metrics.getMSE_RGB(this.image, this.imageOriginal).toFixed(2)),
     };
     return { image: this.image, process: this.processLogger };
   }

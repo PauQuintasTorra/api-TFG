@@ -1,176 +1,136 @@
 [
   {
-    "nameImage": "SampleGIFImage_350kbmb.jpg",
-    "timestamp": "1685549290609-426100",
+    "nameImage": "aaron-burden-2IzoIHBgYAo-unsplash.jpg",
+    "timestamp": "1687385962980-699770",
     "progress": [
       {
         "class": {
           "type": "Wavelet",
           "waveletType": "Haar",
-          "waveletLevel": 2
+          "waveletLevel": 5
         },
-        "max": 259,
-        "min": -198,
-        "entropy": 4.869724045912037,
-        "varianze": 1167.1493737383769,
-        "mean": 6.025373246934678
+        "max": 249,
+        "min": -209,
+        "entropy": 4.81,
+        "varianze": 206.1,
+        "mean": 0.04
       },
       {
         "class": {
           "type": "Quantizer",
-          "q_step": 5
+          "quantizerType": "Scalar",
+          "q_step": 2
         },
-        "max": 51,
-        "min": -39,
-        "entropy": 2.959484114101773,
-        "varianze": 44.24564129268595,
-        "mean": 1.1863458421495225
+        "max": 124,
+        "min": -104,
+        "entropy": 3.63,
+        "varianze": 49.92,
+        "mean": 0.02
       },
       {
-        "class": {
-          "type": "EntropyEncoder",
-          "encoderType": "Lzma"
-        },
-        "max": 51,
-        "min": -39,
-        "entropy": 2.959484114101773,
-        "varianze": 44.24564129268595,
-        "mean": 1.1863458421495225
+        "type": "Sense dades",
+        "class": "Sense dades",
+        "value": "Sense dades",
+        "max": "Sense dades",
+        "min": "Sense dades",
+        "entropy": "Sense dades",
+        "varianze": "Sense dades",
+        "mean": "Sense dades"
+      },
+      {
+        "type": "Sense dades",
+        "class": "Sense dades",
+        "value": "Sense dades",
+        "max": "Sense dades",
+        "min": "Sense dades",
+        "entropy": "Sense dades",
+        "varianze": "Sense dades",
+        "mean": "Sense dades"
       }
     ],
+    "entropyStats": {
+      "compressionRatio": 0,
+      "finalEntropy": 3.63
+    },
     "initStats": {
       "max": 255,
       "min": 0,
-      "entropy": 6.013217774294696,
-      "varianze": 4628.615046195683,
-      "mean": 98.75785234239366
-    },
-    "entropyStats": {
-      "compressionRatio": "3.249",
-      "bitsPerSample": "6.191",
-      "bitsPerSampleOriginal": "19.999",
-      "finalBitsPerSample": "19.856"
+      "entropy": 5.83,
+      "varianze": 6183.99,
+      "mean": 128.02
     },
     "finalStats": {
-      "psnr": 37.10082995154257,
-      "pae": 14,
-      "mse": 12.676617092556425
+      "psnr": 40.19,
+      "pae": 10,
+      "mse": 6.22
     }
   },
   {
-    "nameImage": "SampleGIFImage_350kbmb.jpg",
-    "timestamp": "1685549451490-104782",
+    "nameImage": "aaron-burden-2IzoIHBgYAo-unsplash.jpg",
+    "timestamp": "1687386007430-348826",
     "progress": [
       {
         "class": {
           "type": "Wavelet",
           "waveletType": "Haar",
-          "waveletLevel": 2
+          "waveletLevel": 5
         },
-        "max": 259,
-        "min": -198,
-        "entropy": 4.869724045912037,
-        "varianze": 1167.1493737383769,
-        "mean": 6.025373246934678
+        "max": 249,
+        "min": -209,
+        "entropy": 4.81,
+        "varianze": 206.1,
+        "mean": 0.04
       },
       {
         "class": {
           "type": "Quantizer",
-          "q_step": 5
+          "quantizerType": "Scalar",
+          "q_step": 2
         },
-        "max": 51,
-        "min": -39,
-        "entropy": 2.959484114101773,
-        "varianze": 44.24564129268595,
-        "mean": 1.1863458421495225
+        "max": 124,
+        "min": -104,
+        "entropy": 3.63,
+        "varianze": 49.92,
+        "mean": 0.02
       },
       {
         "class": {
           "type": "EntropyEncoder",
-          "encoderType": "Lzma"
+          "encoderType": "Lzma",
+          "encoderValue": "Sense dades"
         },
-        "max": 51,
-        "min": -39,
-        "entropy": 2.959484114101773,
-        "varianze": 44.24564129268595,
-        "mean": 1.1863458421495225
+        "max": 124,
+        "min": -104,
+        "entropy": 3.63,
+        "varianze": 49.92,
+        "mean": 0.02
+      },
+      {
+        "type": "Sense dades",
+        "class": "Sense dades",
+        "value": "Sense dades",
+        "max": "Sense dades",
+        "min": "Sense dades",
+        "entropy": "Sense dades",
+        "varianze": "Sense dades",
+        "mean": "Sense dades"
       }
     ],
+    "entropyStats": {
+      "finalEntropy": 3.63,
+      "compressionRatio": 1.6
+    },
     "initStats": {
       "max": 255,
       "min": 0,
-      "entropy": 6.013217774294696,
-      "varianze": 4628.615046195683,
-      "mean": 98.75785234239366
-    },
-    "entropyStats": {
-      "compressionRatio": "3.249",
-      "bitsPerSample": "6.191",
-      "bitsPerSampleOriginal": "19.999",
-      "finalBitsPerSample": 19.856
+      "entropy": 5.83,
+      "varianze": 6183.99,
+      "mean": 128.02
     },
     "finalStats": {
-      "psnr": 37.10082995154257,
-      "pae": 14,
-      "mse": 12.676617092556425
-    }
-  },
-  {
-    "nameImage": "SampleGIFImage_350kbmb.jpg",
-    "timestamp": "1685549699297-349483",
-    "progress": [
-      {
-        "class": {
-          "type": "Wavelet",
-          "waveletType": "Haar",
-          "waveletLevel": 2
-        },
-        "max": 259,
-        "min": -198,
-        "entropy": 4.869724045912037,
-        "varianze": 1167.1493737383769,
-        "mean": 6.025373246934678
-      },
-      {
-        "class": {
-          "type": "Quantizer",
-          "q_step": 5
-        },
-        "max": 51,
-        "min": -39,
-        "entropy": 2.959484114101773,
-        "varianze": 44.24564129268595,
-        "mean": 1.1863458421495225
-      },
-      {
-        "class": {
-          "type": "EntropyEncoder",
-          "encoderType": "Lzma"
-        },
-        "max": 51,
-        "min": -39,
-        "entropy": 2.959484114101773,
-        "varianze": 44.24564129268595,
-        "mean": 1.1863458421495225
-      }
-    ],
-    "initStats": {
-      "max": 255,
-      "min": 0,
-      "entropy": 6.013217774294696,
-      "varianze": 4628.615046195683,
-      "mean": 98.75785234239366
-    },
-    "entropyStats": {
-      "compressionRatio": 3.249,
-      "bitsPerSample": 6.191,
-      "bitsPerSampleOriginal": 19.999,
-      "finalBitsPerSample": 19.856
-    },
-    "finalStats": {
-      "psnr": 37.10082995154257,
-      "pae": 14,
-      "mse": 12.676617092556425
+      "psnr": 40.19,
+      "pae": 10,
+      "mse": 6.22
     }
   }
 ]
