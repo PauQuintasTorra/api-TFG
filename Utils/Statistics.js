@@ -71,7 +71,7 @@ class Statistics{
     }
 
     getEntropyOrderZero(matrix){
-        const counter = matrix.length * matrix.length;
+        const counter = matrix.length * matrix[0].length;
         let valors = {};
         let entropy = 0;
         for(let y = 0; y < matrix.length; y++){
