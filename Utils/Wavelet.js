@@ -104,14 +104,14 @@ class Wavelet {
   RHaar_transform(matrix) {
     for (let i = 0; i < this.SubbandSizeY; i++) {
       const aux = this.RHaar_forward(matrix[i], "r");
-      for (let a = 0; a < aux.length; a++) {
+      for (let a = 0; a < this.SubbandSizeX; a++) {
         matrix[i][a] = aux[a];
       }
     }
 
     for (let j = 0; j < this.SubbandSizeX; j++) {
       const aux_j = this.RHaar_forward(this.extractColumn(matrix, j), "c");
-      for (let b = 0; b < aux_j.length; b++) {
+      for (let b = 0; b < this.SubbandSizeY; b++) {
         matrix[b][j] = aux_j[b];
       }
     }
@@ -122,14 +122,14 @@ class Wavelet {
   RHaar_destransform(matrix) {
     for (let j = 0; j < this.SubbandSizeX; j++) {
       const aux_j = this.RHaar_inverse(this.extractColumn(matrix, j), "c");
-      for (let b = 0; b < aux_j.length; b++) {
+      for (let b = 0; b < this.SubbandSizeY; b++) {
         matrix[b][j] = aux_j[b];
       }
     }
 
     for (let i = 0; i < this.SubbandSizeY; i++) {
       const aux = this.RHaar_inverse(matrix[i], "r");
-      for (let a = 0; a < aux.length; a++) {
+      for (let a = 0; a < this.SubbandSizeX; a++) {
         matrix[i][a] = aux[a];
       }
     }

@@ -45,12 +45,6 @@ class LetsCreate {
         case "Wavelet":
           let subBandX = this.image.red[0].length;
           let subBandY = this.image.red.length;
-          if (subBandY % 2 != 0) {
-            subBandY -= 1;
-          }
-          if (subBandX % 2 != 0) {
-            subBandY -= 1;
-          }
 
           const levels = this.boxes[i].class.waveletLevel;
           const wavelet = new Wavelet(subBandX, subBandY, levels);
@@ -182,12 +176,6 @@ class LetsCreate {
         case "Wavelet":
           let subBandX = this.image.red[0].length;
           let subBandY = this.image.red.length;
-          if (subBandY % 2 != 0) {
-            subBandY -= 1;
-          }
-          if (subBandX % 2 != 0) {
-            subBandY -= 1;
-          }
           const levels = this.boxes[i].class.waveletLevel;
           const wavelet = new Wavelet(subBandX, subBandY, levels);
           this.image = wavelet.mainDestransform(
