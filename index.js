@@ -18,6 +18,27 @@ const DownloaderFromJson = require("./Utils/DownloaderFromJson");
 const Wavelet53 = require("./Utils/Wavelet53");
 const arrayReadyToWork = require("./Utils/Utils");
 const selectPositions = require("./Utils/Utils");
+const { re } = require("mathjs");
+const port = process.env.PORT || 3000;
+
+// Iniciar el servidor
+app.listen(port, () => {
+  console.log("Servidor iniciado en http://localhost:3000");
+});
+
+app.get("/", (req, res)=>{
+  const htmlResponse = `
+    <html>
+      <head>
+        <title>NodeJs y Express en Vercel</title>
+      </head>
+      <body>
+        <h1>Soy un proyecto Back end en vercel</h1>
+      </body>
+    </html>
+  `;
+  res.send(htmlResponse);
+});
 
 // Ruta para enviar una respuesta al cliente de Angular
 app.get("/api/data", (req, res) => {
@@ -262,8 +283,3 @@ app.post("/api/downloadImageURL", async (req, res) => {
 //     res.send(data);
 //   });
 // });
-
-// Iniciar el servidor
-app.listen(3000, () => {
-  console.log("Servidor iniciado en http://localhost:3000");
-});
